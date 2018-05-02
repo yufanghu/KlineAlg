@@ -52,21 +52,21 @@ namespace {
 	//股票基本信息
 	struct tagStockCodeInfo {
 		short market;		//交易所|市场
-		std::string code;	//合约代码
+		std::string stockcode;	//合约代码
 
-		tagStockCodeInfo(short & market, const std::string & code) :
-			market(market), code(code) {}
+		tagStockCodeInfo(short  market, const std::string & code) :
+			market(market), stockcode(code) {}
 
 		bool operator<(const tagStockCodeInfo  & another)const {
 			if (this->market == another.market) {
-				return this->code < another.code;
+				return this->stockcode < another.stockcode;
 			}
 			else
 				return this->market < another.market;
 		}
 
 		bool operator==(const tagStockCodeInfo  & another)const {
-			if (this->market == another.market && this->code == another.code)
+			if (this->market == another.market && this->stockcode == another.stockcode)
 				return true;
 			else
 				return false;
@@ -90,7 +90,7 @@ public:
 	*  @返回 true-成功 false-失败
 	*/
 	//平台筛选接口
-	virtual bool Select(const std::map<tagStockCodeInfo, std::vector<tagKline>> & input,
+	bool select_entrance(const std::map<tagStockCodeInfo, std::vector<tagKline>> & input,
 		std::map<tagStockCodeInfo, tagOutput> & output, EPlatFormType platformType, short avgFac, bool bFiring =false);
 
 };

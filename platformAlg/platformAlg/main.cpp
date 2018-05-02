@@ -36,7 +36,14 @@ void ReadKlineData(const char* path, std::vector<tagKline> & klineVector) {
 int main(int argc, char* argv)
 {
 	std::vector<tagKline>  klineVector;
-	ReadKlineData("D://kline/data.txt", klineVector);
+	ReadKlineData("data.txt", klineVector);
+	std::map<tagStockCodeInfo, std::vector<tagKline>>  input;
+	tagStockCodeInfo tagOne((short)111, std::string("601881"));
+	input[tagOne] = klineVector;
+	std::map<tagStockCodeInfo, tagOutput>  output;
+	CPlatFormAlgorithm plat;
+	plat.select_entrance(input, output, eSinglePlatForm,10,false);
+
 	system("pause");
 	return 0;
 }
