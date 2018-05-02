@@ -21,11 +21,11 @@ bool CPlatFormAlgorithm::select_entrance(const std::map<tagStockCodeInfo, std::v
 		{
 			case
 				::eSinglePlatForm:
-					calAlg.single_plat(input, output, eSinglePlatForm, avgFac, bFiring);
+				calAlg.single_plat(input, output, eSinglePlatForm, avgFac, bFiring);
 				break;
 				case
-					::eDoublePlatForm:
-					calAlg.multi_plat(input, output, eDoublePlatForm, avgFac, bFiring);
+				::eDoublePlatForm:
+				calAlg.multi_plat(input, output, eDoublePlatForm, avgFac, bFiring);
 				break;
 			default:
 				break;

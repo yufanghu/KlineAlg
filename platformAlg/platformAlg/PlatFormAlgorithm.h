@@ -11,7 +11,7 @@
 #include <map>
 #include <string>
 
-namespace {
+namespace alg{
 
 	//k线结构体
 	struct tagKline {
@@ -74,6 +74,7 @@ namespace {
 
 	};
 }
+using namespace alg;
 class CPlatFormAlgorithm
 {
 public:

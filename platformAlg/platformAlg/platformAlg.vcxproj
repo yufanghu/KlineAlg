@@ -146,10 +146,12 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="CaculateAlg.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="PlatFormAlgorithm.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="CaculateAlg.h" />
     <ClInclude Include="PlatFormAlgorithm.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

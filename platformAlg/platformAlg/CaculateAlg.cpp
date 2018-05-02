@@ -17,14 +17,14 @@ bool CCaculateAlg::get_avg(const std::vector<tagKline>& kLineData, int nStart,
 //计算均线值
 	double dSum = 0.0;
 	int i;
-	if (nStart - nCount < 0 && nCount <= 0)
+	if (nStart - nCount < 0 || nCount <= 0)
 	{
 		//不合法数据
 		return false;
 	}
 	for (i = 0; i != nCount; ++i)
 	{
-		dSum += kLineData[i].close;
+		dSum += kLineData[nStart-i].close;
 	}
 	if (i == nCount)
 	{
@@ -36,8 +36,8 @@ bool CCaculateAlg::get_avg(const std::vector<tagKline>& kLineData, int nStart,
 
 }
 
-bool CCaculateAlg::single_step_one(const std::vector<tagKline>& kLineData, short avgFac, int nPos,
-	int nKnb,int nMax, int nMin)
+bool CCaculateAlg::single_step_one(const std::vector<tagKline>& kLineData, short avgFac, int& nPos,
+	int& nKnb,int nMax, int nMin)
 {
 	/*
 	从数据末尾向前筛选
@@ -63,7 +63,13 @@ bool CCaculateAlg::single_step_one(const std::vector<tagKline>& kLineData, short
 			}
 			else
 			{
-				break;
+				if (nCount > nMin)
+				{
+					nPos = i + 1;
+					nKnb = nCount;
+					return true;
+				}
+				
 			}
 			
 		}
@@ -71,7 +77,7 @@ bool CCaculateAlg::single_step_one(const std::vector<tagKline>& kLineData, short
 		{
 			if (nCount > nMin )
 			{
-				nPos = i;
+				nPos = i+1;
 				nKnb = nCount;
 				return true;
 			}
@@ -83,12 +89,13 @@ bool CCaculateAlg::single_step_one(const std::vector<tagKline>& kLineData, short
 		}
 		
 	}
+	
 	return true;
 }
 
 
 
-bool CCaculateAlg::single_step_two(const std::vector<tagKline>& kLineData, int nPos)
+bool CCaculateAlg::single_step_two(const std::vector<tagKline>& kLineData, int& nPos)
 {
 	/*
 	FOR(N=1;N<=8;N++)
@@ -105,9 +112,13 @@ bool CCaculateAlg::single_step_two(const std::vector<tagKline>& kLineData, int n
 	int nEnd = (nPos + 8) > kLineData.size() - 1 ? kLineData.size() : nPos + 8;
 	for (int i = nPos + 1; i <= nEnd; ++i)
 	{
-		if ( kLineData[i].close < kLineData[i].high)
+		if ( kLineData[i].close < kLineData[nPos].high)
 		{
-			nCount++;
+			if (++nCount == 4)
+			{
+				nPos = i - 4;
+				return true;
+			}
 		}
 		else
 		{
@@ -117,12 +128,12 @@ bool CCaculateAlg::single_step_two(const std::vector<tagKline>& kLineData, int n
 	return true;
 }
 
-bool CCaculateAlg::single_step_three(const std::vector<tagKline>& kLineData, int nPos)
+bool CCaculateAlg::single_step_three(const std::vector<tagKline>& kLineData, int& nPos)
 {
 	int nEnd =  kLineData.size() - 2 ;
 	for (int i = nPos + 5; i <= nEnd; ++i)
 	{
-		if (kLineData[i].close < kLineData[i].high)
+		if (kLineData[i].close < kLineData[nPos].high)
 		{
 			continue;
 		}
@@ -139,9 +150,9 @@ bool CCaculateAlg::single_plat(const std::map<tagStockCodeInfo, std::vector<tagK
 {
 	std::map<tagStockCodeInfo, std::vector<tagKline>>::iterator iter ;
 	std::map<tagStockCodeInfo, std::vector<tagKline>> mapInput = input;
-	int nPos;  //满足条件的K线位置
-	bool bRet;
-	int nKnb;
+	int nPos = 0;  //满足条件的K线位置
+	bool bRet = false;
+	int nKnb = 0;
 	for (iter = mapInput.begin(); iter != mapInput.end(); ++iter)
 	{
 		tagStockCodeInfo tagOne = iter->first;
@@ -160,7 +171,7 @@ bool CCaculateAlg::single_plat(const std::map<tagStockCodeInfo, std::vector<tagK
 			//第一步失败
 			continue;
 		}
-		bRet = single_step_two(vecKline, avgFac, nPos);
+		bRet = single_step_two(vecKline, nPos);
 		if (!bRet)
 		{
 			//第二步失败
