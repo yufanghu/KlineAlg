@@ -36,8 +36,8 @@ bool CCaculateAlg::get_avg(const std::vector<tagKline>& kLineData, int nStart,
 
 }
 
-bool CCaculateAlg::single_step_one(const std::vector<tagKline>& kLineData, short avgFac, int& nPos,
-	int& nKnb,int nMax, int nMin)
+bool CCaculateAlg::single_multi_step_one(const std::vector<tagKline>& kLineData, short avgFac,
+	int& nPos,int& nKnb,int nMax, int nMin)
 {
 	/*
 	从数据末尾向前筛选
@@ -66,7 +66,7 @@ bool CCaculateAlg::single_step_one(const std::vector<tagKline>& kLineData, short
 				if (nCount > nMin)
 				{
 					nPos = i + 1;
-					nKnb = nCount;
+					nKnb = nCount - 1;
 					return true;
 				}
 				
@@ -95,7 +95,7 @@ bool CCaculateAlg::single_step_one(const std::vector<tagKline>& kLineData, short
 
 
 
-bool CCaculateAlg::single_step_two(const std::vector<tagKline>& kLineData, int& nPos)
+bool CCaculateAlg::single_multi_step_two(const std::vector<tagKline>& kLineData, int& nPos)
 {
 	/*
 	FOR(N=1;N<=8;N++)
@@ -128,21 +128,37 @@ bool CCaculateAlg::single_step_two(const std::vector<tagKline>& kLineData, int& 
 	return true;
 }
 
-bool CCaculateAlg::single_step_three(const std::vector<tagKline>& kLineData, int& nPos)
+bool CCaculateAlg::single_multi_step_three(const std::vector<tagKline>& kLineData, int& nPos,bool isMulti)
 {
 	int nEnd =  kLineData.size() - 2 ;
 	for (int i = nPos + 5; i <= nEnd; ++i)
 	{
-		if (kLineData[i].close < kLineData[nPos].high)
+
+		if ( (!isMulti && kLineData[i].close < kLineData[nPos].high)
+			|| (isMulti && kLineData[i].close > kLineData[nPos].high ))
 		{
 			continue;
 		}
 		else
 		{
+			nPos = i - 1;
 			return false;
 		}
 	}
+	
 	return true;
+}
+
+bool CCaculateAlg::is_fairing(const std::vector<tagKline>& kLineData, int& nPos, bool isFiring)
+{
+//起爆选项为true时返回判断，否则默认成功
+	int size = kLineData.size();
+	if (isFiring)
+	{
+		return kLineData[size - 1].close > kLineData[nPos].high ? true : false;
+	}
+	return true;
+	
 }
 
 bool CCaculateAlg::single_plat(const std::map<tagStockCodeInfo, std::vector<tagKline>> & input, std::map<tagStockCodeInfo,
@@ -165,13 +181,13 @@ bool CCaculateAlg::single_plat(const std::map<tagStockCodeInfo, std::vector<tagK
 		}
 		
 
-		bRet = single_step_one(vecKline, avgFac, nPos, nKnb,15, 5);
+		bRet = single_multi_step_one(vecKline, avgFac, nPos, nKnb,15, 5);
 		if (!bRet)
 		{
 			//第一步失败
 			continue;
 		}
-		bRet = single_step_two(vecKline, nPos);
+		bRet = single_multi_step_two(vecKline, nPos);
 		if (!bRet)
 		{
 			//第二步失败
@@ -183,7 +199,12 @@ bool CCaculateAlg::single_plat(const std::map<tagStockCodeInfo, std::vector<tagK
 			continue;
 		}
 
-		bRet = single_step_three(vecKline, nPos);
+		bRet = single_multi_step_three(vecKline, nPos);
+		if (!bRet)
+		{
+			continue;
+		}
+		bRet = is_fairing(vecKline, nPos, bFiring);
 		if (bRet)
 		{
 			//筛选成功
@@ -194,8 +215,115 @@ bool CCaculateAlg::single_plat(const std::map<tagStockCodeInfo, std::vector<tagK
 	return false;
 }
 
-bool CCaculateAlg::multi_plat(const std::map<tagStockCodeInfo, std::vector<tagKline>> & input, std::map<tagStockCodeInfo, tagOutput> & output, EPlatFormType platformType, short avgFac, bool bFiring /*= false*/)
+bool CCaculateAlg::multi_step_fourth(const std::vector<tagKline>& kLineData, int& nPos)
 {
+	int nEnd = kLineData.size();
+	//KNB - M <4 结束筛选
+	if (nEnd - nPos < 4)
+	{
+		return false;
+	}
+	int nCount = 0;
+	for (int i = nPos; i < nEnd; ++i)
+	{
+		if (kLineData[i].close < kLineData[nPos].high)
+		{
+			if (++nCount == 4)
+			{
+				nPos = i - 4;
+				return true;
+			}
+		}
+		else
+		{
+			nCount = 0;
+		}
+	}
+	return true;
+}
+
+bool multi_step_fifth(const std::vector<tagKline>& kLineData, int& nPos)
+{
+	int nEnd = kLineData.size() - 2;
+	for (int i = nPos + 5; i <= nEnd; ++i)
+	{
+
+		if ( kLineData[i].close < kLineData[nPos].high)
+		{
+			continue;
+		}
+		else
+		{
+			return false;
+		}
+	}
+
+	return true;
+}
+bool CCaculateAlg::multi_plat(const std::map<tagStockCodeInfo, std::vector<tagKline>> & input,
+	std::map<tagStockCodeInfo, tagOutput> & output, EPlatFormType platformType,
+	short avgFac, bool bFiring /*= false*/)
+{
+	std::map<tagStockCodeInfo, std::vector<tagKline>>::iterator iter;
+	std::map<tagStockCodeInfo, std::vector<tagKline>> mapInput = input;
+	int nPos = 0;  //满足条件的K线位置
+	bool bRet = false;
+	int nKnb = 0;
+	for (iter = mapInput.begin(); iter != mapInput.end(); ++iter)
+	{
+		tagStockCodeInfo tagOne = iter->first;
+		//K线数据
+		std::vector<tagKline> vecKline = iter->second;
+		if (vecKline.size() - 10 < avgFac)
+		{
+			//均线参数不足，满足大于等于10根K线，并且不超过25根k线收盘价>均线值（参数）
+			return false;
+		}
+
+		bRet = single_multi_step_one(vecKline, avgFac, nPos, nKnb, 25, 10);
+		if (!bRet)
+		{
+			//第一步失败
+			continue;
+		}
+		bRet = single_multi_step_two(vecKline, nPos);
+		if (!bRet)
+		{
+			//第二步失败
+			continue;
+		}
+		//待确认 若N+5为最后一根是否算成功
+		//只有N+4 失败
+		if (nPos + 4 == vecKline.size())
+		{
+			continue;
+		}
+		bRet = single_multi_step_three(vecKline, nPos);
+		if (!bRet)
+		{
+			//第三步失败
+			continue;
+		}
+		bRet = multi_step_fourth(vecKline, nPos);
+		if (!bRet)
+		{
+			//第四步失败
+			continue;
+		}
+		bRet = multi_step_fifth(vecKline, nPos);
+		if (!bRet)
+		{
+			//第五步失败
+			continue;
+		}
+
+		bRet = is_fairing(vecKline, nPos, bFiring);
+		if (bRet)
+		{
+			//筛选成功
+			output[tagOne] = {};
+		}
+
 	return false;
 }
 

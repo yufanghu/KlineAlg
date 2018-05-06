@@ -16,10 +16,14 @@ private:
 	/*
 	单平台下第一步筛选
 	*/
-	bool single_step_one(const std::vector<tagKline>& kLineData, short avgFac,int& nPos, int& nKnb,
+	bool single_multi_step_one(const std::vector<tagKline>& kLineData, short avgFac,int& nPos, int& nKnb,
 					int nMax, int nMin);
-	bool single_step_two(const std::vector<tagKline>& kLineData,  int& nPos);
-	bool single_step_three(const std::vector<tagKline>& kLineData, int& nPos);
+	bool single_multi_step_two(const std::vector<tagKline>& kLineData,  int& nPos);
+	//isMulti是否为双平台，默认为但平台
+	bool single_multi_step_three(const std::vector<tagKline>& kLineData, int& nPos,bool isMulti=false);
+	bool is_fairing(const std::vector<tagKline>& kLineData, int& nPos, bool isFiring);
+	bool multi_step_fourth(const std::vector<tagKline>& kLineData, int& nPos);
+	bool multi_step_fifth(const std::vector<tagKline>& kLineData, int& nPos);
 	bool get_avg(const std::vector<tagKline>& kLineData, int nStart,
 		int nCount, double& dAvg);
 };
