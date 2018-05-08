@@ -128,21 +128,42 @@ bool CCaculateAlg::single_multi_step_two(const std::vector<tagKline>& kLineData,
 	return true;
 }
 
-bool CCaculateAlg::single_multi_step_three(const std::vector<tagKline>& kLineData, int& nPos,bool isMulti)
+bool CCaculateAlg::single_plat_step_third(const std::vector<tagKline>& kLineData, int& nPos)
 {
-	int nEnd =  kLineData.size() - 2 ;
+	int nEnd = kLineData.size() - 2;
 	for (int i = nPos + 5; i <= nEnd; ++i)
 	{
 
-		if ( (!isMulti && kLineData[i].close < kLineData[nPos].high)
-			|| (isMulti && kLineData[i].close > kLineData[nPos].high ))
+		if (kLineData[i].close < kLineData[nPos].high)
 		{
 			continue;
 		}
 		else
 		{
-			nPos = i - 1;
 			return false;
+		}
+	}
+
+	return true;
+}
+
+bool CCaculateAlg::multi_step_third(const std::vector<tagKline>& kLineData, int& nPos)
+{
+	/*
+	若符合CLOSE(N+i)>HIGH(N)
+	记录：M=i （此步骤定位了M数据）
+	*/
+	int nEnd =  kLineData.size() - 2 ;
+	for (int i = nPos + 5; i <= nEnd; ++i)
+	{
+
+		if (kLineData[i].close > kLineData[nPos].high)
+		{
+			nPos = i;
+		}
+		else
+		{
+			continue;
 		}
 	}
 	
@@ -199,7 +220,7 @@ bool CCaculateAlg::single_plat(const std::map<tagStockCodeInfo, std::vector<tagK
 			continue;
 		}
 
-		bRet = single_multi_step_three(vecKline, nPos);
+		bRet = single_plat_step_third(vecKline, nPos);
 		if (!bRet)
 		{
 			continue;
@@ -298,7 +319,7 @@ bool CCaculateAlg::multi_plat(const std::map<tagStockCodeInfo, std::vector<tagKl
 		{
 			continue;
 		}
-		bRet = single_multi_step_three(vecKline, nPos);
+		bRet = multi_step_third(vecKline, nPos);
 		if (!bRet)
 		{
 			//第三步失败

@@ -20,7 +20,8 @@ private:
 					int nMax, int nMin);
 	bool single_multi_step_two(const std::vector<tagKline>& kLineData,  int& nPos);
 	//isMulti是否为双平台，默认为但平台
-	bool single_multi_step_three(const std::vector<tagKline>& kLineData, int& nPos,bool isMulti=false);
+	bool single_plat_step_third(const std::vector<tagKline>& kLineData, int& nPos);
+	bool multi_step_third(const std::vector<tagKline>& kLineData, int& nPos);
 	bool is_fairing(const std::vector<tagKline>& kLineData, int& nPos, bool isFiring);
 	bool multi_step_fourth(const std::vector<tagKline>& kLineData, int& nPos);
 	bool multi_step_fifth(const std::vector<tagKline>& kLineData, int& nPos);
