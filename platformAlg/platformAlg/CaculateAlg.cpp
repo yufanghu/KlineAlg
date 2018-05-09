@@ -344,7 +344,7 @@ bool CCaculateAlg::multi_plat(const std::map<tagStockCodeInfo, std::vector<tagKl
 			//É¸Ñ¡³É¹¦
 			output[tagOne] = {};
 		}
-
+	}
 	return false;
 }
 
