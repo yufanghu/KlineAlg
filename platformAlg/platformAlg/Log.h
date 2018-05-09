@@ -18,7 +18,7 @@ static void logRecord(string strFunc,int iLine, string strMod, char* cFormat,...
 	sprintf_s(acBuffer1, 254, "[%s] [%d] [%s]  ", strFunc.data(), iLine, strMod.data());
 	va_list args;
 	va_start(args, cFormat);
-	vsprintf(acBuffer2, cFormat, args);
+	vsprintf_s(acBuffer2, cFormat, args);
 
 	ofstream ofLogFile;
 	ofLogFile.open("log.txt", ios::out | ios::app);

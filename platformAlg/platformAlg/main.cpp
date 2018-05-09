@@ -42,8 +42,8 @@ int main(int argc, char* argv)
 	input[tagOne] = klineVector;
 	std::map<tagStockCodeInfo, tagOutput>  output;
 	CPlatFormAlgorithm plat;
-	plat.select_entrance(input, output, eSinglePlatForm,40,false);
-
+	//plat.select_entrance(input, output, eSinglePlatForm,40,true);
+	plat.select_entrance(input, output, eDoublePlatForm, 40, true);
 	system("pause");
 	return 0;
 }
