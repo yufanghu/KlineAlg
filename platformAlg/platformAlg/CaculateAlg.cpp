@@ -89,12 +89,13 @@ bool CCaculateAlg::single_multi_step_one(const std::vector<tagKline>& kLineData,
 		{
 			if (nCount <= nMax)
 			{
-				nCount++;
+				
 #ifdef _DEBUG
 				char ss[32];
 				stamp_to_standard(kLineData[i].time, ss);
-				printf("single step 1 %s close %f avg %f \n", ss, kLineData[i].close, dAvg);
+				printf("single step 1 count %d %s close %f avg %f \n",nCount, ss, kLineData[i].close, dAvg);
 #endif // _DEBUG
+				nCount++;
 			}
 			else
 			{
@@ -122,7 +123,7 @@ bool CCaculateAlg::single_multi_step_one(const std::vector<tagKline>& kLineData,
 			}
 			else
 			{
-				nCount = 0;
+				nCount = 1;
 				continue;
 			}
 		}
@@ -156,17 +157,16 @@ bool CCaculateAlg::single_multi_step_two(const std::vector<tagKline>& kLineData,
 		{
 			if (kLineData[j].close < kLineData[i].high)
 			{
-#ifdef _DEBUG
-				char ss[32];
-				stamp_to_standard(kLineData[j].time, ss);
-				printf("step2 time %s close %f high %f\n", ss, kLineData[j].close, kLineData[i].high);
-#endif // _DEBUG
 
 				if (++nCount == 4)
 				{
+#ifdef _DEBUG
+					char ss[32];
+					stamp_to_standard(kLineData[j].time, ss);
+					printf("step2 time %s close %f high %f\n", ss, kLineData[j].close, kLineData[i].high);
+#endif // _DEBUG
 					nPos = j - 4;
 
-					char ss[32];
 					stamp_to_standard(kLineData[nPos].time, ss);
 					LOG("平台第二步筛选成功 date[%s]", ss);
 					return true;
