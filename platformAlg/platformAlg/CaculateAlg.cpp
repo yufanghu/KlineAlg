@@ -22,6 +22,7 @@ typedef struct times
 	int Second;
 }Times;
 
+
 char* stamp_to_standard(int stampTime, char* s)
 {
 	time_t tick = (time_t)stampTime;
@@ -67,8 +68,8 @@ bool CCaculateAlg::single_multi_step_one(const std::vector<tagKline>& kLineData,
 {
 	/*
 	从数据末尾向前筛选
-	条件：满足大于等于5根K线，并且不超过15根k线收盘价 > 均线值（参数）
-	记录数据K线数目：KNB, 从第1根收盘价高于均线算起，比如筛选结果为21根。
+	条件：满足大于等于nMin根K线，并且不超过nMax根k线收盘价 > 均线值（参数）
+	记录数据K线数目：KNB, 从第1根收盘价高于均线算起
 	不符合该股票数据筛选结束，返回空值
 	*/
 	int nCount = 1;
@@ -89,12 +90,13 @@ bool CCaculateAlg::single_multi_step_one(const std::vector<tagKline>& kLineData,
 		{
 			if (nCount <= nMax)
 			{
-				nCount++;
+				
 #ifdef _DEBUG
 				char ss[32];
 				stamp_to_standard(kLineData[i].time, ss);
-				printf("single step 1 %s close %f avg %f \n", ss, kLineData[i].close, dAvg);
+				printf("single step 1 count %d %s close %f avg %f \n",nCount, ss, kLineData[i].close, dAvg);
 #endif // _DEBUG
+				nCount++;
 			}
 			else
 			{
@@ -103,7 +105,7 @@ bool CCaculateAlg::single_multi_step_one(const std::vector<tagKline>& kLineData,
 #ifdef _DEBUG
 				char ss[32];
 				stamp_to_standard(kLineData[nPos].time, ss);
-				printf("单平台的第二步的起始数据  count %d %s close %f avg %f \n",nKnb, ss, kLineData[nPos].close, dAvg);
+				printf("平台的第二步的起始数据  count %d date %s close %f \n",nKnb, ss, kLineData[nPos].close);
 #endif // _DEBUG
 				
 				return true;
@@ -117,12 +119,16 @@ bool CCaculateAlg::single_multi_step_one(const std::vector<tagKline>& kLineData,
 			{
 				nPos = i+1;
 				nKnb = nCount;
-				printf("count %d\n", nKnb);
+#ifdef _DEBUG
+				char ss[32];
+				stamp_to_standard(kLineData[nPos].time, ss);
+				printf("单平台的第二步的起始数据  count %d %s close %f \n", nKnb, ss, kLineData[nPos].close);
+#endif // _DEBUG
 				return true;
 			}
 			else
 			{
-				nCount = 0;
+				nCount = 1;
 				continue;
 			}
 		}
@@ -156,17 +162,16 @@ bool CCaculateAlg::single_multi_step_two(const std::vector<tagKline>& kLineData,
 		{
 			if (kLineData[j].close < kLineData[i].high)
 			{
-#ifdef _DEBUG
-				char ss[32];
-				stamp_to_standard(kLineData[j].time, ss);
-				printf("step2 time %s close %f high %f\n", ss, kLineData[j].close, kLineData[i].high);
-#endif // _DEBUG
 
 				if (++nCount == 4)
 				{
+#ifdef _DEBUG
+					char ss[32];
+					stamp_to_standard(kLineData[j].time, ss);
+					printf("平台第二步筛选结果 date %s close %f high %f\n", ss, kLineData[j].close, kLineData[i].high);
+#endif // _DEBUG
 					nPos = j - 4;
 
-					char ss[32];
 					stamp_to_standard(kLineData[nPos].time, ss);
 					LOG("平台第二步筛选成功 date[%s]", ss);
 					return true;
@@ -189,17 +194,9 @@ bool CCaculateAlg::single_multi_step_two(const std::vector<tagKline>& kLineData,
 bool CCaculateAlg::single_plat_step_third(const std::vector<tagKline>& kLineData, int& nPos)
 {
 	int nEnd = kLineData.size() - 2;
-#ifdef _DEBUG
-	printf("pos %d\n",nPos+5);
-#endif // _DEBUG
 
 	for (int i = nPos + 5; i <= nEnd; ++i)
 	{
-#ifdef _DEBUG
-		char ss[32];
-		stamp_to_standard(kLineData[i].time, ss);
-		printf(" 3 time %s close %f high %f\n",ss, kLineData[i].close, kLineData[nPos].high);
-#endif // DEBUG
 
 		if (kLineData[i].close < kLineData[nPos].high)
 		{
@@ -213,6 +210,10 @@ bool CCaculateAlg::single_plat_step_third(const std::vector<tagKline>& kLineData
 	char ss[32];
 	stamp_to_standard(kLineData[nPos].time, ss);
 	LOG("单平台第三步筛选成功 date[%s]", ss);
+
+#ifdef _DEBUG
+	printf(" 单平台第三步筛选成功\n");
+#endif // DEBUG
 	return true;
 }
 
@@ -233,10 +234,16 @@ bool CCaculateAlg::is_fairing(const std::vector<tagKline>& kLineData, int& nPos,
 		char ss[32];
 		stamp_to_standard(kLineData[size-1].time, ss);
 		LOG("起爆成功 date %s close %f high %f ", ss, kLineData[size - 1].close, kLineData[nPos].high);
+#ifdef _DEBUG
+		printf("起爆成功 date %s close %f high %f\n ", ss, kLineData[size - 1].close, kLineData[nPos].high);
+#endif
 	}
 	else
 	{
 		LOG("起爆失败");
+#ifdef _DEBUG
+		printf("起爆失败\n");
+#endif
 	}
 	return firRes;
 	
@@ -313,6 +320,9 @@ bool CCaculateAlg::multi_step_third(const std::vector<tagKline>& kLineData, int&
 			char ss[32];
 			stamp_to_standard(kLineData[nPos].time, ss);
 			LOG("多平台第三步筛选成功 date[%s]", ss);
+#ifdef _DEBUG
+			printf("多平台第三步筛选成功 date[%s]", ss);
+#endif
 			return true;
 		}
 		else
@@ -323,6 +333,10 @@ bool CCaculateAlg::multi_step_third(const std::vector<tagKline>& kLineData, int&
 	char ss[32];
 	stamp_to_standard(kLineData[nPos].time, ss);
 	LOG("多平台第三步筛选失败 date[%s]", ss);
+
+#ifdef _DEBUG
+	printf("多平台第三步筛选失败 date[%s]", ss);
+#endif
 	return false;
 }
 
