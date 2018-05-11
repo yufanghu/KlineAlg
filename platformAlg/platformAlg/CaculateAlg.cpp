@@ -122,7 +122,7 @@ bool CCaculateAlg::single_multi_step_one(const std::vector<tagKline>& kLineData,
 #ifdef _DEBUG
 				char ss[32];
 				stamp_to_standard(kLineData[nPos].time, ss);
-				printf("单平台的第二步的起始数据  count %d %s close %f \n", nKnb, ss, kLineData[nPos].close);
+				printf("平台的第二步的起始数据  count %d %s close %f \n", nKnb, ss, kLineData[nPos].close);
 #endif // _DEBUG
 				return true;
 			}
