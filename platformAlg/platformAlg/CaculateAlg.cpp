@@ -1,17 +1,10 @@
+#include "StdAfx.h"
 #include "CaculateAlg.h"
 #include "Log.h"
-#include "time.h"  
-#include "string.h"  
+#include <time.h>  
+#include <string.h>  
 
 
-CCaculateAlg::CCaculateAlg()
-{
-}
-
-
-CCaculateAlg::~CCaculateAlg()
-{
-}
 typedef struct times
 {
 	int Year;
@@ -21,6 +14,14 @@ typedef struct times
 	int Min;
 	int Second;
 }Times;
+
+CCaculateAlg::CCaculateAlg()
+{
+}
+
+CCaculateAlg::~CCaculateAlg()
+{
+}
 
 char* stamp_to_standard(int stampTime, char* s)
 {
@@ -45,7 +46,7 @@ bool CCaculateAlg::get_avg(const std::vector<tagKline>& kLineData, int nStart,
 	if (nStart - nCount < 0 || nCount <= 0)
 	{
 		//不合法数据
-		LOG("均线参数不足");
+		LOG("计算均线参数不足");
 		return false;
 	}
 	for (i = 0; i != nCount; ++i)
@@ -55,6 +56,7 @@ bool CCaculateAlg::get_avg(const std::vector<tagKline>& kLineData, int nStart,
 	if (i == nCount)
 	{
 		dAvg = dSum / nCount;
+		//LOG("均线值%d", dAvg);
 		return true;
 	}
 
@@ -62,7 +64,7 @@ bool CCaculateAlg::get_avg(const std::vector<tagKline>& kLineData, int nStart,
 
 }
 
-bool CCaculateAlg::single_multi_step_one(const std::vector<tagKline>& kLineData, short avgFac,
+bool CCaculateAlg::single_double_step_one(const std::vector<tagKline>& kLineData, short avgFac,
 	int& nPos,int& nKnb,int nMax, int nMin)
 {
 	/*
@@ -75,50 +77,44 @@ bool CCaculateAlg::single_multi_step_one(const std::vector<tagKline>& kLineData,
 	nPos = kLineData.size();
 	for (int i = kLineData.size() - 1; i >= 0; --i)
 	{
-		
 		double dAvg;
-		
 		bool bRet = get_avg(kLineData, i, avgFac, dAvg);
 
-
-		if (!bRet && i < nMin)
+		if (!bRet && nCount < nMin)
 		{
+			LOG("平台第一步筛选失败,均线参数不够");
 			return false;
 		}
+
 		if ( kLineData[i].close > dAvg )
 		{
 			if (nCount <= nMax)
-			{
-				
-#ifdef _DEBUG
-				char ss[32];
-				stamp_to_standard(kLineData[i].time, ss);
-				printf("single step 1 count %d %s close %f avg %f \n",nCount, ss, kLineData[i].close, dAvg);
-#endif // _DEBUG
+			{	
+				char buf[32];
+				stamp_to_standard(kLineData[i].time, buf);
+				LOG("step 1[%d] %s close %f avg %f \n",nCount, buf, kLineData[i].close, dAvg);
 				nCount++;
 			}
 			else
 			{
 				nPos = i + 1;
 				nKnb = nCount - 1 ;
-#ifdef _DEBUG
-				char ss[32];
-				stamp_to_standard(kLineData[nPos].time, ss);
-				printf("单平台的第二步的起始数据  count %d %s close %f avg %f \n",nKnb, ss, kLineData[nPos].close, dAvg);
-#endif // _DEBUG
-				
+
+				char buf[32];
+				stamp_to_standard(kLineData[nPos].time, buf);
+				//LOG("step 1筛选成功 knb[%d] %s close %f avg %f \n", nKnb, buf, kLineData[nPos].close, dAvg);	
+				LOG("step 1筛选成功 knb[%d]\n", nKnb);
 				return true;
-				
 			}
 			
 		}
 		else
 		{
-			if (nCount > nMin )
+			if (nCount >= nMin )
 			{
 				nPos = i+1;
 				nKnb = nCount;
-				printf("count %d\n", nKnb);
+				LOG("step 1筛选成功 knb[%d]\n\n", nKnb-1);
 				return true;
 			}
 			else
@@ -129,13 +125,11 @@ bool CCaculateAlg::single_multi_step_one(const std::vector<tagKline>& kLineData,
 		}
 		
 	}
-	LOG("平台第一步筛选失败 Pos[%d]", nPos);
+	LOG("平台第一步筛选失败 Pos[%d]\n", nPos);
 	return false;
 }
 
-
-
-bool CCaculateAlg::single_multi_step_two(const std::vector<tagKline>& kLineData, int& nPos)
+bool CCaculateAlg::single_double_step_two(const std::vector<tagKline>& kLineData, int& nPos)
 {
 	/*
 	FOR(N=1;N<=8;N++)
@@ -160,15 +154,10 @@ bool CCaculateAlg::single_multi_step_two(const std::vector<tagKline>& kLineData,
 
 				if (++nCount == 4)
 				{
-#ifdef _DEBUG
 					char ss[32];
-					stamp_to_standard(kLineData[j].time, ss);
-					printf("step2 time %s close %f high %f\n", ss, kLineData[j].close, kLineData[i].high);
-#endif // _DEBUG
 					nPos = j - 4;
-
 					stamp_to_standard(kLineData[nPos].time, ss);
-					LOG("平台第二步筛选成功 date[%s]", ss);
+					LOG("step2筛选成功 date[%s] close %f high %f\n\n", ss, kLineData[nPos].close, kLineData[nPos].high);
 					return true;
 				}
 			}
@@ -180,43 +169,40 @@ bool CCaculateAlg::single_multi_step_two(const std::vector<tagKline>& kLineData,
 		}
 	
 	}
+
+
 	char ss[32];
 	stamp_to_standard(kLineData[nPos].time, ss);
-	LOG("平台第二步筛选失败 Pos[%s]", ss);
+	LOG("平台第二步筛选失败 Pos[%s]\n\n", ss);
+
 	return false;
 }
 
 bool CCaculateAlg::single_plat_step_third(const std::vector<tagKline>& kLineData, int& nPos)
 {
 	int nEnd = kLineData.size() - 2;
-#ifdef _DEBUG
-	printf("pos %d\n",nPos+5);
-#endif // _DEBUG
 
 	for (int i = nPos + 5; i <= nEnd; ++i)
 	{
-#ifdef _DEBUG
 		char ss[32];
 		stamp_to_standard(kLineData[i].time, ss);
-		printf(" 3 time %s close %f high %f\n",ss, kLineData[i].close, kLineData[nPos].high);
-#endif // DEBUG
-
+		
 		if (kLineData[i].close < kLineData[nPos].high)
 		{
+			LOG("step3 %s close %f 小于 high %f\n", ss, kLineData[i].close, kLineData[nPos].high);
 			continue;
 		}
 		else
 		{
+			LOG("step3 %s close %f 不小于 high %f\n， 第三步失败", ss, kLineData[i].close, kLineData[nPos].high);
 			return false;
 		}
 	}
 	char ss[32];
 	stamp_to_standard(kLineData[nPos].time, ss);
-	LOG("单平台第三步筛选成功 date[%s]", ss);
+	LOG("单平台第三步筛选成功[%s]\n\n", ss);
 	return true;
 }
-
-
 
 bool CCaculateAlg::is_fairing(const std::vector<tagKline>& kLineData, int& nPos, bool isFiring)
 {
@@ -226,78 +212,28 @@ bool CCaculateAlg::is_fairing(const std::vector<tagKline>& kLineData, int& nPos,
 	if (isFiring)
 	{
 		firRes = kLineData[size - 1].close > kLineData[nPos].high ? true : false;
-		
-	}
-	if (firRes)
-	{
-		char ss[32];
-		stamp_to_standard(kLineData[size-1].time, ss);
-		LOG("起爆成功 date %s close %f high %f ", ss, kLineData[size - 1].close, kLineData[nPos].high);
+		if (firRes)
+		{
+			char ss[32];
+			stamp_to_standard(kLineData[size - 1].time, ss);
+			LOG("起爆成功 %s close %f high %f\n\n", ss, kLineData[size - 1].close, kLineData[nPos].high);
+			return true;
+		}
+		else
+		{
+			LOG("起爆失败\n");
+			return false;
+		}
 	}
 	else
 	{
-		LOG("起爆失败");
-	}
-	return firRes;
-	
-}
-
-bool CCaculateAlg::single_plat(const std::map<tagStockCodeInfo, std::vector<tagKline>> & input, std::map<tagStockCodeInfo,
-						tagOutput> & output, EPlatFormType platformType, short avgFac, bool bFiring /*= false*/)
-{
-	std::map<tagStockCodeInfo, std::vector<tagKline>>::iterator iter ;
-	std::map<tagStockCodeInfo, std::vector<tagKline>> mapInput = input;
-	int nPos = 0;  //满足条件的K线位置
-	bool bRet = false;
-	int nKnb = 0;
-	for (iter = mapInput.begin(); iter != mapInput.end(); ++iter)
-	{
-		tagStockCodeInfo tagOne = iter->first;
-		//K线数据
-		std::vector<tagKline> vecKline = iter->second;
-		if (vecKline.size() - 5 < avgFac)
-		{
-			//均线参数不足，满足大于等于5根K线，并且不超过15根k线收盘价>均线值（参数）
-			
-			return false;
-		}
-		
-
-		bRet = single_multi_step_one(vecKline, avgFac, nPos, nKnb,15, 5);
-		if (!bRet)
-		{
-			//第一步失败
-			continue;
-		}
-		bRet = single_multi_step_two(vecKline, nPos);
-		if (!bRet)
-		{
-			//第二步失败
-			continue;
-		}
-		if (nPos + 4 == vecKline.size() || nPos + 4 == vecKline.size() -1 )
-		{
-			output[tagOne] = {};
-			continue;
-		}
-
-		bRet = single_plat_step_third(vecKline, nPos);
-		if (!bRet)
-		{
-			continue;
-		}
-		bRet = is_fairing(vecKline, nPos, bFiring);
-		if (bRet)
-		{
-			//筛选成功
-			output[tagOne] = {};
-		}
+		LOG("起爆关闭，筛选成功\n\n")
+		return true;
 	}
 
-	return false;
 }
 
-bool CCaculateAlg::multi_step_third(const std::vector<tagKline>& kLineData, int& nPos)
+bool CCaculateAlg::double_step_third(const std::vector<tagKline>& kLineData, int& nPos)
 {
 	/*
 	若符合CLOSE(N+i)>HIGH(N)
@@ -312,7 +248,7 @@ bool CCaculateAlg::multi_step_third(const std::vector<tagKline>& kLineData, int&
 			nPos = i;
 			char ss[32];
 			stamp_to_standard(kLineData[nPos].time, ss);
-			LOG("多平台第三步筛选成功 date[%s]", ss);
+			LOG("多平台第三步筛选成功 [%s]\n\n", ss);
 			return true;
 		}
 		else
@@ -320,13 +256,14 @@ bool CCaculateAlg::multi_step_third(const std::vector<tagKline>& kLineData, int&
 			continue;
 		}
 	}
+
 	char ss[32];
 	stamp_to_standard(kLineData[nPos].time, ss);
-	LOG("多平台第三步筛选失败 date[%s]", ss);
+	LOG("多平台第三步筛选失败 [%s]\n\n", ss);
 	return false;
 }
 
-bool CCaculateAlg::multi_step_fourth(const std::vector<tagKline>& kLineData, int& nPos)
+bool CCaculateAlg::double_step_fourth(const std::vector<tagKline>& kLineData, int& nPos)
 {
 	int nEnd = kLineData.size();
 	//KNB - M <4 结束筛选
@@ -347,10 +284,7 @@ bool CCaculateAlg::multi_step_fourth(const std::vector<tagKline>& kLineData, int
 
 					char ss[32];
 					stamp_to_standard(kLineData[i].time, ss);
-					LOG("多平台第四步筛选成功 date[%s]", ss);
-					#ifdef _DEBUG
-					printf("多平台第四步筛选成功 date[%s]\n", ss);
-					#endif
+					LOG("多平台第四步筛选成功 [%s]\n\n", ss);
 					return true;
 				}
 			}
@@ -365,11 +299,11 @@ bool CCaculateAlg::multi_step_fourth(const std::vector<tagKline>& kLineData, int
 
 	char ss[32];
 	stamp_to_standard(kLineData[nPos].time, ss);
-	LOG("多平台第四步筛选失败 date[%s]", ss);
+	LOG("多平台第四步筛选失败 [%s]\n\n", ss);
 	return false;
 }
 
-bool CCaculateAlg::multi_step_fifth(const std::vector<tagKline>& kLineData, int& nPos)
+bool CCaculateAlg::double_step_fifth(const std::vector<tagKline>& kLineData, int& nPos)
 {
 	int nEnd = kLineData.size() - 2;
 	for (int i = nPos + 5; i <= nEnd; ++i)
@@ -383,30 +317,21 @@ bool CCaculateAlg::multi_step_fifth(const std::vector<tagKline>& kLineData, int&
 		{
 			char ss[32];
 			stamp_to_standard(kLineData[nPos].time, ss);
-			LOG("多平台第五步筛选失败 date[%s]", ss);
-
-#ifdef _DEBUG
-			printf("多平台第五步筛选失败 date[%s]", ss);
-#endif // _DEBUG
-
+			LOG("多平台第五步筛选失败 [%s]\n\n", ss);
 			return false;
 		}
 	}
 
 	char ss[32];
 	stamp_to_standard(kLineData[nPos].time, ss);
-	LOG("多平台第五步筛选成功 date[%s]", ss);
-
-#ifdef _DEBUG
-	printf("多平台第五步筛选成功 date[%s]", ss);
-#endif // _DEBUG
-
+	LOG("多平台第五步筛选成功 [%s]", ss);
 	return true;
 }
-bool CCaculateAlg::multi_plat(const std::map<tagStockCodeInfo, std::vector<tagKline>> & input,
-	std::map<tagStockCodeInfo, tagOutput> & output, EPlatFormType platformType,
-	short avgFac, bool bFiring /*= false*/)
+
+bool CCaculateAlg::double_plat(const std::map<tagStockCodeInfo, std::vector<tagKline>> & input,
+	std::map<tagStockCodeInfo, tagOutput> & output, short avgFac, bool bFiring /*= false*/)
 {
+	LOG("双平台-均线参数[%d]\n");
 	std::map<tagStockCodeInfo, std::vector<tagKline>>::iterator iter;
 	std::map<tagStockCodeInfo, std::vector<tagKline>> mapInput = input;
 	int nPos = 0;  //满足条件的K线位置
@@ -414,23 +339,24 @@ bool CCaculateAlg::multi_plat(const std::map<tagStockCodeInfo, std::vector<tagKl
 	int nKnb = 0;
 	for (iter = mapInput.begin(); iter != mapInput.end(); ++iter)
 	{
+		PrintData(iter->second);
 		tagStockCodeInfo tagOne = iter->first;
 		//K线数据
 		std::vector<tagKline> vecKline = iter->second;
 		if (vecKline.size()  < unsigned(avgFac) )
 		{
 			//均线参数不足，满足大于等于nMin根K线，并且不超过nMax根k线收盘价>均线值（参数）
-			LOG("K线数量 %d < 均线参数 %d", vecKline.size(), avgFac);
+			LOG("均线[%d]参数不足, 只有[%d]根k线\n", avgFac, vecKline.size());
 			return false;
 		}
 
-		bRet = single_multi_step_one(vecKline, avgFac, nPos, nKnb, 25, 10);
+		bRet = single_double_step_one(vecKline, avgFac, nPos, nKnb, 25, 10);
 		if (!bRet)
 		{
 			//第一步失败
 			continue;
 		}
-		bRet = single_multi_step_two(vecKline, nPos);
+		bRet = single_double_step_two(vecKline, nPos);
 		
 		if (!bRet)
 		{
@@ -443,19 +369,19 @@ bool CCaculateAlg::multi_plat(const std::map<tagStockCodeInfo, std::vector<tagKl
 			continue;
 		}
 		
-		bRet = multi_step_third(vecKline, nPos);
+		bRet = double_step_third(vecKline, nPos);
 		if (!bRet)
 		{
 			//第三步失败
 			continue;
 		}
-		bRet = multi_step_fourth(vecKline, nPos);
+		bRet = double_step_fourth(vecKline, nPos);
 		if (!bRet)
 		{
 			//第四步失败
 			continue;
 		}
-		bRet = multi_step_fifth(vecKline, nPos);
+		bRet = double_step_fifth(vecKline, nPos);
 		if (!bRet)
 		{
 			//第五步失败
@@ -466,10 +392,77 @@ bool CCaculateAlg::multi_plat(const std::map<tagStockCodeInfo, std::vector<tagKl
 		if (bRet)
 		{
 			//筛选成功
-			output[tagOne] = {};
+			output[tagOne] = tagOutput();
 		}
 	}
 	return false;
 }
 
+bool CCaculateAlg::single_plat(const std::map<tagStockCodeInfo, std::vector<tagKline>> & input, std::map<tagStockCodeInfo,
+	tagOutput> & output, short avgFac, bool bFiring /*= false*/)
+{
+	LOG("开始=========================\n单平台-均线参数[%d]\n", avgFac);
+
+	std::map<tagStockCodeInfo, std::vector<tagKline>>::iterator iter;
+	std::map<tagStockCodeInfo, std::vector<tagKline>> mapInput = input;
+	int nPos = 0;  //满足条件的K线位置
+	bool bRet = false;
+	int nKnb = 0;
+
+	for (iter = mapInput.begin(); iter != mapInput.end(); ++iter)
+	{
+		PrintData(iter->second);
+
+		tagStockCodeInfo tagOne = iter->first;
+		//K线数据
+		std::vector<tagKline> vecKline = iter->second;
+		if (vecKline.size() - 5 < avgFac)
+		{
+			//均线参数不足，满足大于等于5根K线，并且不超过15根k线收盘价>均线值（参数）
+			LOG("均线[%d]参数不足, 只有[%d]根k线\n", avgFac, vecKline.size());
+			return false;
+		}
+
+		bRet = single_double_step_one(vecKline, avgFac, nPos, nKnb, 15, 5);
+		if (!bRet)
+		{
+			//第一步失败
+			continue;
+		}
+		bRet = single_double_step_two(vecKline, nPos);
+		if (!bRet)
+		{
+			//第二步失败
+			continue;
+		}
+		if (nPos + 4 == vecKline.size() || nPos + 4 == vecKline.size() - 1)
+		{
+			output[tagOne] = tagOutput();
+			continue;
+		}
+
+		bRet = single_plat_step_third(vecKline, nPos);
+		if (!bRet)
+		{
+			continue;
+		}
+		bRet = is_fairing(vecKline, nPos, bFiring);
+		if (bRet)
+		{
+			//筛选成功
+			output[tagOne] = tagOutput();
+		}
+	}
+
+	return false;
+}
+
+void CCaculateAlg::PrintData(const std::vector<tagKline>& kLineData)
+{
+	auto it = kLineData.begin();
+	for (; it != kLineData.end(); ++it) {
+		LOG_DATA("%lld,%f,%f,%f,%f\n", it->time, it->open, it->high, it->low, it->close);
+	}
+	printf("读取%d行数据,开 高 低 收\n\n", kLineData.size());
+}
 

@@ -1,5 +1,7 @@
+#include "StdAfx.h"
 #include "PlatFormAlgorithm.h"
 #include "CaculateAlg.h"
+#include "Log.h"
 
 CPlatFormAlgorithm::CPlatFormAlgorithm()
 {
@@ -21,17 +23,17 @@ bool CPlatFormAlgorithm::select_entrance(const std::map<tagStockCodeInfo, std::v
 		{
 			case
 				::eSinglePlatForm:
-				calAlg.single_plat(input, output, eSinglePlatForm, avgFac, bFiring);
+				calAlg.single_plat(input, output, avgFac, bFiring);
 				break;
 				case
 				::eDoublePlatForm:
-				calAlg.multi_plat(input, output, eDoublePlatForm, avgFac, bFiring);
+				calAlg.double_plat(input, output, avgFac, bFiring);
 				break;
 			default:
 				break;
 		}
 
 	}
-	
+	LOG_FLUSH();
 	return false;
 }

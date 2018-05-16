@@ -1,4 +1,9 @@
-#pragma once
+#ifndef _CACULATE_ALG_H
+#define _CACULATE_ALG_H
+/*************************************
+创建日期	:2018-05-05
+描述		: K线平台算法实现类
+**************************************/
 #include "PlatFormAlgorithm.h"
 class CCaculateAlg 
 {
@@ -6,26 +11,53 @@ public:
 	CCaculateAlg();
 	~CCaculateAlg();
 
+	//单平台入口
 	bool single_plat(const std::map<tagStockCodeInfo, std::vector<tagKline>> & input,
-		std::map<tagStockCodeInfo, tagOutput> & output, EPlatFormType platformType, short avgFac, bool bFiring = false);
+		std::map<tagStockCodeInfo, tagOutput> & output, short avgFac, bool bFiring = false);
 
-	bool multi_plat(const std::map<tagStockCodeInfo, std::vector<tagKline>> & input,
-		std::map<tagStockCodeInfo, tagOutput> & output, EPlatFormType platformType, short avgFac, bool bFiring = false);
+	//双平台入口
+	bool double_plat(const std::map<tagStockCodeInfo, std::vector<tagKline>> & input,
+		std::map<tagStockCodeInfo, tagOutput> & output, short avgFac, bool bFiring = false);
 
 private:
-	/*
-	单平台下第一步筛选
+
+	/**
+	*  功能描述: 平台筛选第一步（单、双平台公用）
+	*  @param nMax	 输入参数   最大根数量
+	*  @param nMin 输入参数     最小根数量
 	*/
-	bool single_multi_step_one(const std::vector<tagKline>& kLineData, short avgFac,int& nPos, int& nKnb,
+	bool single_double_step_one(const std::vector<tagKline>& kLineData, short avgFac, int& nPos, int& nKnb,
 					int nMax, int nMin);
-	bool single_multi_step_two(const std::vector<tagKline>& kLineData,  int& nPos);
-	//isMulti是否为双平台，默认为但平台
+	/**
+	*  功能描述: 平台筛选第二步（单、双平台公用）
+	*/
+	bool single_double_step_two(const std::vector<tagKline>& kLineData,  int& nPos);
+
+	/**
+	*  功能描述: 单平台第三步
+	*/
 	bool single_plat_step_third(const std::vector<tagKline>& kLineData, int& nPos);
-	bool multi_step_third(const std::vector<tagKline>& kLineData, int& nPos);
+
+	/**
+	*  功能描述: 双平台第三步、第四步、第五步
+	*/
+	bool double_step_third(const std::vector<tagKline>& kLineData, int& nPos);
+	bool double_step_fourth(const std::vector<tagKline>& kLineData, int& nPos);
+	bool double_step_fifth(const std::vector<tagKline>& kLineData, int& nPos);
+
+	/**
+	*  功能描述: 判定是否起爆
+	*/
 	bool is_fairing(const std::vector<tagKline>& kLineData, int& nPos, bool isFiring);
-	bool multi_step_fourth(const std::vector<tagKline>& kLineData, int& nPos);
-	bool multi_step_fifth(const std::vector<tagKline>& kLineData, int& nPos);
+	
+	/**
+	*  功能描述: 计算均线的参数
+	*/
 	bool get_avg(const std::vector<tagKline>& kLineData, int nStart,
 		int nCount, double& dAvg);
+
+	void PrintData(const std::vector<tagKline>& kLineData);
 };
+
+#endif
 

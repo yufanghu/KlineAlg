@@ -1,0 +1,7 @@
+[CCaculateAlg::single_multi_step_two] [185] [d:\kline\source\platformalg\platformalg\caculatealg.cpp]  平台第二步筛选失败 Pos[2018-02-22]
+[CCaculateAlg::single_multi_step_two] [171] [d:\kline\source\platformalg\platformalg\caculatealg.cpp]  平台第二步筛选成功 date[2018-04-18]
+[CCaculateAlg::single_plat_step_third] [215] [d:\kline\source\platformalg\platformalg\caculatealg.cpp]  单平台第三步筛选成功 date[2018-04-18]
+[CCaculateAlg::is_fairing] [239] [d:\kline\source\platformalg\platformalg\caculatealg.cpp]  起爆失败
+[CCaculateAlg::single_multi_step_two] [171] [d:\kline\source\platformalg\platformalg\caculatealg.cpp]  平台第二步筛选成功 date[2018-04-18]
+[CCaculateAlg::single_plat_step_third] [215] [d:\kline\source\platformalg\platformalg\caculatealg.cpp]  单平台第三步筛选成功 date[2018-04-18]
+[CCaculateAlg::is_fairing] [235] [d:\kline\source\platformalg\platformalg\caculatealg.cpp]  起爆成功 date 2018-04-27 close 17.010000 high 17.000000 
