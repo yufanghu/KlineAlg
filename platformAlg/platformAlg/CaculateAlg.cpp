@@ -97,14 +97,8 @@ bool CCaculateAlg::single_double_step_one(const std::vector<tagKline>& kLineData
 			}
 			else
 			{
-				nPos = i + 1;
-				nKnb = nCount - 1 ;
-
-				char buf[32];
-				stamp_to_standard(kLineData[nPos].time, buf);
-				//LOG("step 1筛选成功 knb[%d] %s close %f avg %f \n", nKnb, buf, kLineData[nPos].close, dAvg);	
-				LOG("step 1筛选成功 knb[%d]\n", nKnb);
-				return true;
+				LOG("step 1筛选失败 超过满足条件\n");
+				return false;
 			}
 			
 		}
@@ -116,6 +110,11 @@ bool CCaculateAlg::single_double_step_one(const std::vector<tagKline>& kLineData
 				nKnb = nCount;
 				LOG("step 1筛选成功 knb[%d]\n\n", nKnb-1);
 				return true;
+			}
+			else if (i == kLineData.size() - 1)
+			{
+				LOG("step 1筛选失败 第一根数据不满足\n");
+				return false;
 			}
 			else
 			{
@@ -416,7 +415,8 @@ bool CCaculateAlg::single_plat(const std::map<tagStockCodeInfo, std::vector<tagK
 		tagStockCodeInfo tagOne = iter->first;
 		//K线数据
 		std::vector<tagKline> vecKline = iter->second;
-		if (vecKline.size() - 5 < avgFac)
+		
+		if (vecKline.size() - avgFac - 5 <= avgFac)
 		{
 			//均线参数不足，满足大于等于5根K线，并且不超过15根k线收盘价>均线值（参数）
 			LOG("均线[%d]参数不足, 只有[%d]根k线\n", avgFac, vecKline.size());
@@ -463,6 +463,8 @@ void CCaculateAlg::PrintData(const std::vector<tagKline>& kLineData)
 	for (; it != kLineData.end(); ++it) {
 		LOG_DATA("%lld,%f,%f,%f,%f\n", it->time, it->open, it->high, it->low, it->close);
 	}
+#ifdef _DEBUG
 	printf("读取%d行数据,开 高 低 收\n\n", kLineData.size());
+#endif
 }
 
