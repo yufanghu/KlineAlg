@@ -12,12 +12,12 @@ public:
 	~CCaculateAlg();
 
 	//单平台入口
-	bool single_plat(const std::map<tagStockCodeInfo, std::vector<tagKline>> & input,
-		std::map<tagStockCodeInfo, tagOutput> & output, short avgFac, bool bFiring = false);
+	bool single_plat(const std::pair<tagStockCodeInfo, std::vector<tagKline>> & input,
+		std::map<tagStockCodeInfo, tagOutput> * output, short avgFac, bool bFiring = false);
 
 	//双平台入口
-	bool double_plat(const std::map<tagStockCodeInfo, std::vector<tagKline>> & input,
-		std::map<tagStockCodeInfo, tagOutput> & output, short avgFac, bool bFiring = false);
+	bool double_plat(const std::pair<tagStockCodeInfo, std::vector<tagKline>> & input,
+		std::map<tagStockCodeInfo, tagOutput> * output, short avgFac, bool bFiring = false);
 
 private:
 

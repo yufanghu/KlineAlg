@@ -49,7 +49,7 @@ int main(int argc, char* argv)
 
 
 	CPlatFormAlgorithm plat;
-	plat.select_entrance(input, output, eSinglePlatForm,20,true);
+	plat.select_entrance(input, output, eSinglePlatForm,20,false);
 
 	system("pause");
 	return 0;

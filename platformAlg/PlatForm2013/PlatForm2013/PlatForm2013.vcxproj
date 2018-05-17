@@ -80,12 +80,18 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="..\..\platformAlg\CaculateAlg.cpp" />
+    <ClCompile Include="..\..\platformAlg\Log.cpp" />
     <ClCompile Include="..\..\platformAlg\main.cpp" />
     <ClCompile Include="..\..\platformAlg\PlatFormAlgorithm.cpp" />
+    <ClCompile Include="..\..\platformAlg\Thread.cpp" />
+    <ClCompile Include="..\..\platformAlg\ThreadPoolExecutor.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\platformAlg\CaculateAlg.h" />
+    <ClInclude Include="..\..\platformAlg\Log.h" />
     <ClInclude Include="..\..\platformAlg\PlatFormAlgorithm.h" />
+    <ClInclude Include="..\..\platformAlg\Thread.h" />
+    <ClInclude Include="..\..\platformAlg\ThreadPoolExecutor.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -327,139 +327,136 @@ bool CCaculateAlg::double_step_fifth(const std::vector<tagKline>& kLineData, int
 	return true;
 }
 
-bool CCaculateAlg::double_plat(const std::map<tagStockCodeInfo, std::vector<tagKline>> & input,
-	std::map<tagStockCodeInfo, tagOutput> & output, short avgFac, bool bFiring /*= false*/)
+bool CCaculateAlg::double_plat(const std::pair<tagStockCodeInfo, std::vector<tagKline>> & input,
+	std::map<tagStockCodeInfo, tagOutput> * output, short avgFac, bool bFiring /*= false*/)
 {
 	LOG("双平台-均线参数[%d]\n");
-	std::map<tagStockCodeInfo, std::vector<tagKline>>::iterator iter;
-	std::map<tagStockCodeInfo, std::vector<tagKline>> mapInput = input;
+	
+	
 	int nPos = 0;  //满足条件的K线位置
 	bool bRet = false;
 	int nKnb = 0;
-	for (iter = mapInput.begin(); iter != mapInput.end(); ++iter)
+
+	PrintData(input.second);
+	std::vector<tagKline> vecKline =input.second;
+	if (vecKline.size()  < unsigned(avgFac) )
 	{
-		PrintData(iter->second);
-		tagStockCodeInfo tagOne = iter->first;
-		//K线数据
-		std::vector<tagKline> vecKline = iter->second;
-		if (vecKline.size()  < unsigned(avgFac) )
-		{
-			//均线参数不足，满足大于等于nMin根K线，并且不超过nMax根k线收盘价>均线值（参数）
-			LOG("均线[%d]参数不足, 只有[%d]根k线\n", avgFac, vecKline.size());
-			return false;
-		}
-
-		bRet = single_double_step_one(vecKline, avgFac, nPos, nKnb, 25, 10);
-		if (!bRet)
-		{
-			//第一步失败
-			continue;
-		}
-		bRet = single_double_step_two(vecKline, nPos);
-		
-		if (!bRet)
-		{
-			//第二步失败
-			continue;
-		}
-		//只有N+4 失败
-		if (nPos + 4 == vecKline.size())
-		{
-			continue;
-		}
-		
-		bRet = double_step_third(vecKline, nPos);
-		if (!bRet)
-		{
-			//第三步失败
-			continue;
-		}
-		bRet = double_step_fourth(vecKline, nPos);
-		if (!bRet)
-		{
-			//第四步失败
-			continue;
-		}
-		bRet = double_step_fifth(vecKline, nPos);
-		if (!bRet)
-		{
-			//第五步失败
-			continue;
-		}
-
-		bRet = is_fairing(vecKline, nPos, bFiring);
-		if (bRet)
-		{
-			//筛选成功
-			output[tagOne] = tagOutput();
-		}
+		//均线参数不足，满足大于等于nMin根K线，并且不超过nMax根k线收盘价>均线值（参数）
+		LOG("均线[%d]参数不足, 只有[%d]根k线\n", avgFac, vecKline.size());
+		return false;
 	}
+
+	bRet = single_double_step_one(vecKline, avgFac, nPos, nKnb, 25, 10);
+	if (!bRet)
+	{
+		//第一步失败
+		return false;
+	}
+	bRet = single_double_step_two(vecKline, nPos);
+		
+	if (!bRet)
+	{
+		//第二步失败
+		return false;
+	}
+	//只有N+4 失败
+	if (nPos + 4 == vecKline.size())
+	{
+		return false;
+	}
+		
+	bRet = double_step_third(vecKline, nPos);
+	if (!bRet)
+	{
+		//第三步失败
+		return false;
+	}
+	bRet = double_step_fourth(vecKline, nPos);
+	if (!bRet)
+	{
+		//第四步失败
+		return false;
+	}
+	bRet = double_step_fifth(vecKline, nPos);
+	if (!bRet)
+	{
+		//第五步失败
+		return false;
+	}
+
+	bRet = is_fairing(vecKline, nPos, bFiring);
+	if (bRet)
+	{
+		//筛选成功
+		output->insert(make_pair(input.first, tagOutput()));
+	}
+
 	return false;
 }
 
-bool CCaculateAlg::single_plat(const std::map<tagStockCodeInfo, std::vector<tagKline>> & input, std::map<tagStockCodeInfo,
-	tagOutput> & output, short avgFac, bool bFiring /*= false*/)
+bool CCaculateAlg::single_plat(const std::pair<tagStockCodeInfo, std::vector<tagKline>> & input, std::map<tagStockCodeInfo, tagOutput> * output, short avgFac, bool bFiring /*= false*/)
 {
 	LOG("开始=========================\n单平台-均线参数[%d]\n", avgFac);
 
-	std::map<tagStockCodeInfo, std::vector<tagKline>>::iterator iter;
-	std::map<tagStockCodeInfo, std::vector<tagKline>> mapInput = input;
 	int nPos = 0;  //满足条件的K线位置
 	bool bRet = false;
 	int nKnb = 0;
 
-	for (iter = mapInput.begin(); iter != mapInput.end(); ++iter)
-	{
-		PrintData(iter->second);
 
-		tagStockCodeInfo tagOne = iter->first;
-		//K线数据
-		std::vector<tagKline> vecKline = iter->second;
+	PrintData(input.second);
+
+	std::vector<tagKline> vecKline = input.second;
 		
-		if (vecKline.size() - avgFac - 5 <= avgFac)
-		{
-			//均线参数不足，满足大于等于5根K线，并且不超过15根k线收盘价>均线值（参数）
-			LOG("均线[%d]参数不足, 只有[%d]根k线\n", avgFac, vecKline.size());
-			return false;
-		}
-
-		bRet = single_double_step_one(vecKline, avgFac, nPos, nKnb, 15, 5);
-		if (!bRet)
-		{
-			//第一步失败
-			continue;
-		}
-		bRet = single_double_step_two(vecKline, nPos);
-		if (!bRet)
-		{
-			//第二步失败
-			continue;
-		}
-		if (nPos + 4 == vecKline.size() || nPos + 4 == vecKline.size() - 1)
-		{
-			output[tagOne] = tagOutput();
-			continue;
-		}
-
-		bRet = single_plat_step_third(vecKline, nPos);
-		if (!bRet)
-		{
-			continue;
-		}
-		bRet = is_fairing(vecKline, nPos, bFiring);
-		if (bRet)
-		{
-			//筛选成功
-			output[tagOne] = tagOutput();
-		}
+	if (vecKline.size() - avgFac - 5 <= avgFac)
+	{
+		//均线参数不足，满足大于等于5根K线，并且不超过15根k线收盘价>均线值（参数）
+		LOG("均线[%d]参数不足, 只有[%d]根k线\n", avgFac, vecKline.size());
+		return false;
 	}
+
+	bRet = single_double_step_one(vecKline, avgFac, nPos, nKnb, 15, 5);
+	if (!bRet)
+	{
+		//第一步失败
+		return false;
+	}
+	bRet = single_double_step_two(vecKline, nPos);
+	if (!bRet)
+	{
+		//第二步失败
+		return false;
+	}
+	if (nPos + 4 == vecKline.size() || nPos + 4 == vecKline.size() - 1)
+	{
+		output->insert(make_pair(input.first, tagOutput()));
+		return true;
+	}
+
+	bRet = single_plat_step_third(vecKline, nPos);
+	if (!bRet)
+	{
+		return false;
+	}
+	bRet = is_fairing(vecKline, nPos, bFiring);
+	if (bRet)
+	{
+		//筛选成功
+		output->insert(make_pair(input.first, tagOutput()));
+		return true;
+	}
+	
 
 	return false;
 }
 
 void CCaculateAlg::PrintData(const std::vector<tagKline>& kLineData)
 {
+	if (kLineData.empty())
+	{
+		return;
+	}
 	auto it = kLineData.begin();
+	
 	for (; it != kLineData.end(); ++it) {
 		LOG_DATA("%lld,%f,%f,%f,%f\n", it->time, it->open, it->high, it->low, it->close);
 	}
