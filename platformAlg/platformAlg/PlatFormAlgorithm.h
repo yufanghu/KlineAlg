@@ -10,6 +10,7 @@
 #include <vector>
 #include <map>
 #include <string>
+#include "Log.h"
 
 namespace alg{
 
@@ -80,7 +81,6 @@ class CPlatFormAlgorithm
 public:
 	CPlatFormAlgorithm();
 	virtual ~CPlatFormAlgorithm();
-
 	/**
 	*  功能描述: 算法对外调用接口
 	*  @param input	 输入参数  key-股票信息， value-k线集合

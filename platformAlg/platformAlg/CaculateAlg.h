@@ -10,15 +10,17 @@ class CCaculateAlg
 public:
 	CCaculateAlg();
 	~CCaculateAlg();
+	CLog m_cLog;
 
 	//单平台入口
-	bool single_plat(const std::pair<tagStockCodeInfo, std::vector<tagKline>> & input,
+	bool single_plat(const std::map<tagStockCodeInfo, std::vector<tagKline>> & input,
 		std::map<tagStockCodeInfo, tagOutput> & output, short avgFac, bool bFiring = false);
 
 	//双平台入口
-	bool double_plat(const std::pair<tagStockCodeInfo, std::vector<tagKline>> & input,
+	bool double_plat(const std::map<tagStockCodeInfo, std::vector<tagKline>> & input,
 		std::map<tagStockCodeInfo, tagOutput> & output, short avgFac, bool bFiring = false);
 
+	void SetLogObj(CLog * pLog){m_pLog = pLog;}
 private:
 
 	/**
@@ -43,7 +45,7 @@ private:
 	*/
 	bool double_step_third(const std::vector<tagKline>& kLineData, int& nPos);
 	bool double_step_fourth(const std::vector<tagKline>& kLineData, int& nPos);
-	bool double_step_fifth(const std::vector<tagKline>& kLineData, int& nPos);
+	bool double_step_fifth(const std::vector<tagKline>& kLineData, const int& nPos);
 
 	/**
 	*  功能描述: 判定是否起爆
@@ -57,6 +59,9 @@ private:
 		int nCount, double& dAvg);
 
 	void PrintData(const std::vector<tagKline>& kLineData);
+	void PrintHead(const tagStockCodeInfo & codeInfo, int nPos = -1);
+
+	CLog * m_pLog;
 };
 
 #endif
