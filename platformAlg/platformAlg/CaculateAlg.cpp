@@ -24,35 +24,28 @@ CCaculateAlg::~CCaculateAlg()
 {
 }
 
-char* stamp_to_standard(int stampTime, char* s)
+char* stamp_to_standard(time_t stampTime, char* s)
 {
 	time_t tick = (time_t)stampTime;
 	struct tm tm;
-	//char s[100];
-	Times standard;
 
-	//tick = time(NULL);
 	tm = *localtime(&tick);
 	strftime(s, 32, "%Y-%m-%d", &tm);
 
 	return s;
 }
 
-char* stamp_to_standard_ex(int stampTime, char* s)
+char* stamp_to_standard_ex(time_t stampTime, char* s)
 {
 	time_t tick = (time_t)stampTime;
 	struct tm tm;
-	//char s[100];
-	Times standard;
-
-	//tick = time(NULL);
 	tm = *localtime(&tick);
 	strftime(s, 32, "%Y-%m-%d %H:%M:%S", &tm);
 
 	return s;
 }
 
-char* stamp_to_standard_ex_log(int stampTime, char* s)
+char* stamp_to_standard_ex_log(time_t stampTime, char* s)
 {
 	time_t tick = (time_t)stampTime;
 	struct tm tm;

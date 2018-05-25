@@ -5,8 +5,7 @@
 
 CPlatFormAlgorithm::CPlatFormAlgorithm()
 {
-	int i = 0;
-	1 / i;
+
 }
 
 CPlatFormAlgorithm::~CPlatFormAlgorithm()
