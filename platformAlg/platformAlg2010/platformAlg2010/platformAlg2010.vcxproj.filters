@@ -30,6 +30,12 @@
     <ClInclude Include="..\..\platformAlg\Log.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\platformAlg\Thread.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\platformAlg\ThreadPoolExecutor.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\platformAlg\CaculateAlg.cpp">
@@ -45,6 +51,12 @@
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="..\..\platformAlg\Log.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\platformAlg\Thread.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\platformAlg\ThreadPoolExecutor.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>
