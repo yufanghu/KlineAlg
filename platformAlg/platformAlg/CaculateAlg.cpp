@@ -61,7 +61,7 @@ bool CCaculateAlg::get_avg(const std::vector<tagKline>& kLineData, int nStart,
 //计算均线值
 	double dSum = 0.0;
 	int i;
-	if (nStart - nCount < 0 || nCount <= 0)
+	if (nStart + 1 - nCount  < 0 || nCount <= 0)
 	{
 		//不合法数据
 		m_pLog->logRecord("计算均线参数不足");
@@ -98,10 +98,21 @@ bool CCaculateAlg::single_double_step_one(const std::vector<tagKline>& kLineData
 		double dAvg;
 		bool bRet = get_avg(kLineData, i, avgFac, dAvg);
 
-		if (!bRet && nCount < nMin)
+		if (!bRet)
 		{
-			m_pLog->logRecord("平台第一步筛选失败,均线参数不够");
-			return false;
+			if (nCount < nMin)
+			{
+				m_pLog->logRecord("平台第一步筛选失败,均线参数不足\n");
+				return false;
+			}
+			else
+			{
+				char buf[32];
+				stamp_to_standard(kLineData[i].time, buf);
+				m_pLog->logRecord("平台第一步筛选成功,当前均线[%s]不足但满足条件，均线[%d]\n",buf,nCount);
+				return true;
+			}
+			
 		}
 
 		if (kLineData[i].close > dAvg)
