@@ -387,6 +387,12 @@ bool CCaculateAlg::double_plat(const std::map<tagStockCodeInfo, std::vector<tagK
 	int nIndex = 0;
 	for (iter = mapInput.begin(), nIndex = 0; iter != mapInput.end(); ++iter)
 	{
+		if(iter->second.size() > 0){
+			tagKline temp = iter->second.at(iter->second.size()-1);
+			if(temp.time > 1546228799) 
+				return true;
+		}
+
 		PrintHead(iter->first, ++nIndex);
 		PrintData(iter->second);
 		tagStockCodeInfo tagOne = iter->first;
@@ -479,6 +485,11 @@ bool CCaculateAlg::single_plat(const std::map<tagStockCodeInfo, std::vector<tagK
 	int nIndex = 0;
 	for (iter = mapInput.begin(), nIndex = 0 ; iter != mapInput.end(); ++iter)
 	{
+		if(iter->second.size() > 0){
+			tagKline temp = iter->second.at(iter->second.size()-1);
+			if(temp.time > 1546228799) 
+				return true;
+		}
 		PrintHead(iter->first, ++nIndex);
 		PrintData(iter->second);
 
