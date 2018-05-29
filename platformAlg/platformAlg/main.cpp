@@ -93,11 +93,11 @@ int main(int argc, char* argv)
 	CPlatFormAlgorithm plat;
 	{
 		std::map<tagStockCodeInfo, std::vector<tagKline>>  input;
-		ReadKlineData("1526900149_0_log_data.txt", input);
+		ReadKlineData("1.txt", input);
 
 		std::map<tagStockCodeInfo, tagOutput>  output;
 		
-		plat.select_entrance(input, output, eDoublePlatForm,15,false);
+		plat.select_entrance(input, output, eSinglePlatForm,10,false);
 	}
 
 
