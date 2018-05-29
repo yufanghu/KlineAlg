@@ -12,6 +12,8 @@
 #include <string>
 #include "Log.h"
 
+
+
 namespace alg{
 
 	//k线结构体

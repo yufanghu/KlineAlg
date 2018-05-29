@@ -23,7 +23,7 @@ using namespace std;
 #define LOG_INIT() \
 	CLog::Init()
 
-extern char* stamp_to_standard_ex_log(time_t stampTime, char* s);
+
 
 class CLog{
 public:
@@ -33,6 +33,7 @@ public:
 	void Flush();
 	void logRecord(/*string strFunc,int iLine, string strMod, */char* cFormat,...);
 	void dataRecord(/*string strFunc,int iLine, string strMod, */char* cFormat,...);
+	void clearLog();
 private:
 	std::string m_logBuffer ;
 	std::string m_dataBuffer ;

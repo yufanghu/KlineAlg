@@ -5,6 +5,8 @@
 #include <string.h>  
 
 
+
+
 typedef struct times
 {
 	int Year;
@@ -24,36 +26,23 @@ CCaculateAlg::~CCaculateAlg()
 {
 }
 
-char* stamp_to_standard(time_t stampTime, char* s)
+void stamp_to_standard(time_t stampTime, char* s, char* format=NULL)
 {
 	time_t tick = (time_t)stampTime;
 	struct tm tm;
 
 	tm = *localtime(&tick);
-	strftime(s, 32, "%Y-%m-%d", &tm);
-
-	return s;
+	int size = strlen(s) > 32 ? strlen(s) : 32;
+	if (format == NULL)
+	{
+		strftime(s, size, "%Y-%m-%d", &tm);
+	}
+	else
+	{
+		strftime(s, size, format, &tm);
+	}
 }
 
-char* stamp_to_standard_ex(time_t stampTime, char* s)
-{
-	time_t tick = (time_t)stampTime;
-	struct tm tm;
-	tm = *localtime(&tick);
-	strftime(s, 32, "%Y-%m-%d %H:%M:%S", &tm);
-
-	return s;
-}
-
-char* stamp_to_standard_ex_log(time_t stampTime, char* s)
-{
-	time_t tick = (time_t)stampTime;
-	struct tm tm;
-	tm = *localtime(&tick);
-	strftime(s, 32, "%Y_%m_%d_%H_%M_%S", &tm);
-
-	return s;
-}
 
 bool CCaculateAlg::get_avg(const std::vector<tagKline>& kLineData, int nStart,
 	int nCount, double& dAvg)
@@ -100,19 +89,7 @@ bool CCaculateAlg::single_double_step_one(const std::vector<tagKline>& kLineData
 
 		if (!bRet)
 		{
-			if (nCount < nMin)
-			{
-				m_pLog->logRecord("平台第一步筛选失败,均线参数不足\n");
-				return false;
-			}
-			else
-			{
-				char buf[32];
-				stamp_to_standard(kLineData[i].time, buf);
-				m_pLog->logRecord("平台第一步筛选成功,当前均线[%s]不足但满足条件，均线[%d]\n",buf,nCount);
-				return true;
-			}
-			
+			return false;
 		}
 
 		if (kLineData[i].close > dAvg)
@@ -371,33 +348,41 @@ bool CCaculateAlg::double_step_fifth(const std::vector<tagKline>& kLineData, con
 bool CCaculateAlg::double_plat(const std::map<tagStockCodeInfo, std::vector<tagKline>> & input,
 	std::map<tagStockCodeInfo, tagOutput> & output, short avgFac, bool bFiring /*= false*/)
 {
-	char buf[20] = { 0 };
-	stamp_to_standard_ex(time(NULL), buf);
+	char buf[32] = { 0 };
+	stamp_to_standard(time(NULL), buf,"%Y-%m-%d %H:%M:%S");
 
 	if (bFiring)
-		m_pLog->logRecord("开始[%s]=========================\n双平台-均线参数[%d]起爆[开启]\n", buf, avgFac);
+		m_pLog->logRecord("开始[%s]\n=========================\n双平台-均线参数[%d]起爆[开启]\n", buf, avgFac);
 	else
-		m_pLog->logRecord("开始[%s]=========================\n双平台-均线参数[%d]起爆[关闭]\n", buf, avgFac);
+		m_pLog->logRecord("开始[%s]\n=========================\n双平台-均线参数[%d]起爆[关闭]\n", buf, avgFac);
 
-	std::map<tagStockCodeInfo, std::vector<tagKline>>::iterator iter;
-	std::map<tagStockCodeInfo, std::vector<tagKline>> mapInput = input;
+	std::map<tagStockCodeInfo, std::vector<tagKline>>::const_iterator iter;
+	//std::map<tagStockCodeInfo, std::vector<tagKline>> mapInput = input;
+
+
 	int nPos = 0;  //满足条件的K线位置
 	bool bRet = false;
 	int nKnb = 0;
 	int nIndex = 0;
-	for (iter = mapInput.begin(), nIndex = 0; iter != mapInput.end(); ++iter)
+	for (iter = input.begin(), nIndex = 0; iter != input.end(); ++iter)
 	{
 		if(iter->second.size() > 0){
 			tagKline temp = iter->second.at(iter->second.size()-1);
-			if(temp.time > 1546228799) 
+			memset(buf, 0, sizeof(buf));
+			stamp_to_standard(temp.time, buf, "%Y%m%d");
+			if (strcmp(buf, DEADLINE_DATE) == 0)
+			{
+				m_pLog->clearLog();
+				m_pLog->logRecord("程序试用期已经结束，程序退出");
 				return true;
+			}
 		}
 
 		PrintHead(iter->first, ++nIndex);
 		PrintData(iter->second);
 		tagStockCodeInfo tagOne = iter->first;
 		//K线数据
-		std::vector<tagKline>  & vecKline = iter->second;
+		const std::vector<tagKline>  & vecKline = iter->second;
 		if (vecKline.size()  < unsigned(avgFac) )
 		{
 			//均线参数不足，满足大于等于nMin根K线，并且不超过nMax根k线收盘价>均线值（参数）
@@ -470,32 +455,40 @@ bool CCaculateAlg::double_plat(const std::map<tagStockCodeInfo, std::vector<tagK
 bool CCaculateAlg::single_plat(const std::map<tagStockCodeInfo, std::vector<tagKline>> & input, std::map<tagStockCodeInfo,
 	tagOutput> & output, short avgFac, bool bFiring /*= false*/)
 {
-	char buf[20] = { 0 };
-	stamp_to_standard_ex(time(NULL), buf);
+	char buf[32] = { 0 };
+	stamp_to_standard(time(NULL), buf, "%Y-%m-%d %H:%M:%S");
 	if (bFiring)
-		m_pLog->logRecord("开始[%s]=========================\n单平台-均线参数[%d]起爆[开启]\n", buf, avgFac);
+		m_pLog->logRecord("开始[%s]\n=========================\n单平台-均线参数[%d]起爆[开启]\n", buf, avgFac);
 	else
-		m_pLog->logRecord("开始[%s]=========================\n单平台-均线参数[%d]起爆[关闭]\n", buf, avgFac);
+		m_pLog->logRecord("开始[%s]\n=========================\n单平台-均线参数[%d]起爆[关闭]\n", buf, avgFac);
 
-	std::map<tagStockCodeInfo, std::vector<tagKline>>::iterator iter;
-	std::map<tagStockCodeInfo, std::vector<tagKline>> mapInput = input;
+	std::map<tagStockCodeInfo, std::vector<tagKline>>::const_iterator iter;
+	//std::map<tagStockCodeInfo, std::vector<tagKline>> mapInput = input;
+
 	int nPos = 0;  //满足条件的K线位置
 	bool bRet = false;
 	int nKnb = 0;
 	int nIndex = 0;
-	for (iter = mapInput.begin(), nIndex = 0 ; iter != mapInput.end(); ++iter)
+	for (iter = input.begin(), nIndex = 0; iter != input.end(); ++iter)
 	{
 		if(iter->second.size() > 0){
 			tagKline temp = iter->second.at(iter->second.size()-1);
-			if(temp.time > 1546228799) 
+			memset(buf, 0, sizeof(buf));
+			stamp_to_standard(temp.time, buf, "%Y%m%d");
+			if (strcmp(buf, DEADLINE_DATE) == 0)
+			{
+				m_pLog->clearLog();
+				m_pLog->logRecord("程序试用期已经结束，程序退出");
 				return true;
+			}
+				
 		}
 		PrintHead(iter->first, ++nIndex);
 		PrintData(iter->second);
 
 		tagStockCodeInfo tagOne = iter->first;
 		//K线数据
-		std::vector<tagKline> vecKline = iter->second;
+		const std::vector<tagKline> vecKline = iter->second;
 		if (vecKline.size() - 5 < avgFac)
 		{
 			//均线参数不足，满足大于等于5根K线，并且不超过15根k线收盘价>均线值（参数）

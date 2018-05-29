@@ -97,24 +97,10 @@ int main(int argc, char* argv)
 
 		std::map<tagStockCodeInfo, tagOutput>  output;
 		
-		plat.select_entrance(input, output, eSinglePlatForm,15,false);
+		plat.select_entrance(input, output, eDoublePlatForm,15,false);
 	}
 
-	{
-		std::map<tagStockCodeInfo, std::vector<tagKline>>  input;
-		ReadKlineData("1526900215_1_log_data.txt", input);
-		std::map<tagStockCodeInfo, tagOutput>  output;
 
-		plat.select_entrance(input, output, eSinglePlatForm,15,false);
-	}
-
-	{
-		std::map<tagStockCodeInfo, std::vector<tagKline>>  input;
-		ReadKlineData("1526900266_2_log_data.txt", input);
-		std::map<tagStockCodeInfo, tagOutput>  output;
-
-		plat.select_entrance(input, output, eSinglePlatForm,15,false);
-	}
 
 	//system("pause");
 	return 0;

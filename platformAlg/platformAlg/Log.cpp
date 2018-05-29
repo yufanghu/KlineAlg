@@ -14,12 +14,13 @@ void CLog::Init(){
 	m_dataBuffer = "";
 	system("mkdir Platform_Log");
 }
+extern void stamp_to_standard(time_t stampTime, char* s, char* format = NULL);
 
 void  CLog::Flush(){
 {
 	static int j = 0;
 	char buf[20] = { 0 };
-	stamp_to_standard_ex_log(time(NULL), buf);
+	stamp_to_standard(time(NULL), buf, "%Y_%m_%d_%H_%M_%S");
 
 	char name[256] = { 0 };
 
@@ -45,7 +46,7 @@ void  CLog::Flush(){
 		
 }
 
-void  CLog::logRecord(/*string strFunc,int iLine, string strMod, */char* cFormat,...)
+void  CLog::logRecord(/*string strFunc,int iLine, string strMod, */char* cFormat, ...)
 {
 	char  acBuffer[1024];
 	va_list args;
@@ -71,4 +72,10 @@ void  CLog::dataRecord(/*string strFunc,int iLine, string strMod, */char* cForma
 	m_dataBuffer += strBuffer;
 
 	va_end(args);
+}
+
+void CLog::clearLog()
+{
+	m_dataBuffer = "";
+	m_logBuffer = "";
 }

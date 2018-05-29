@@ -3,6 +3,7 @@
 #include "CaculateAlg.h"
 #include "Log.h"
 
+
 CPlatFormAlgorithm::CPlatFormAlgorithm()
 {
 
@@ -19,6 +20,7 @@ bool CPlatFormAlgorithm::select_entrance(const std::map<tagStockCodeInfo, std::v
 	log.Init();
 	CCaculateAlg calAlg; 
 	calAlg.SetLogObj(&log);
+	bool bRet= false;
 	//for (int nCal = 0; nCal != input.size(); ++nCal)
 	{
 		//遍历map开始筛选
@@ -26,13 +28,23 @@ bool CPlatFormAlgorithm::select_entrance(const std::map<tagStockCodeInfo, std::v
 		{
 			case
 				::eSinglePlatForm:
-				if(calAlg.single_plat(input, output, avgFac, bFiring))
-					return false;
+					bRet = calAlg.single_plat(input, output, avgFac, bFiring);
+					if (bRet)
+					{
+						log.Flush();
+						return false;
+					}
+					
 				break;
 				case
 				::eDoublePlatForm:
-				if(calAlg.double_plat(input, output, avgFac, bFiring))
-					return false;
+					bRet = calAlg.double_plat(input, output, avgFac, bFiring);
+					if (bRet)
+					{
+						log.Flush();
+						return false;
+					}
+					
 				break;
 			default:
 				break;
