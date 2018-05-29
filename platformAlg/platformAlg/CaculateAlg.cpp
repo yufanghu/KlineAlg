@@ -370,7 +370,7 @@ bool CCaculateAlg::double_plat(const std::map<tagStockCodeInfo, std::vector<tagK
 			tagKline temp = iter->second.at(iter->second.size()-1);
 			memset(buf, 0, sizeof(buf));
 			stamp_to_standard(temp.time, buf, "%Y%m%d");
-			if (strcmp(buf, DEADLINE_DATE) == 0)
+			if (strcmp(buf, DEADLINE_DATE) >= 0)
 			{
 				m_pLog->clearLog();
 				m_pLog->logRecord("程序试用期已经结束，程序退出");
@@ -475,7 +475,7 @@ bool CCaculateAlg::single_plat(const std::map<tagStockCodeInfo, std::vector<tagK
 			tagKline temp = iter->second.at(iter->second.size()-1);
 			memset(buf, 0, sizeof(buf));
 			stamp_to_standard(temp.time, buf, "%Y%m%d");
-			if (strcmp(buf, DEADLINE_DATE) == 0)
+			if (strcmp(buf, DEADLINE_DATE) >= 0)
 			{
 				m_pLog->clearLog();
 				m_pLog->logRecord("程序试用期已经结束，程序退出");
