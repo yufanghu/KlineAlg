@@ -83,6 +83,7 @@
     <ClCompile Include="..\..\platformAlg\Log.cpp" />
     <ClCompile Include="..\..\platformAlg\main.cpp" />
     <ClCompile Include="..\..\platformAlg\PlatFormAlgorithm.cpp" />
+    <ClCompile Include="..\..\platformAlg\stock2.cpp" />
     <ClCompile Include="..\..\platformAlg\Thread.cpp" />
     <ClCompile Include="..\..\platformAlg\ThreadPoolExecutor.cpp" />
   </ItemGroup>
@@ -90,6 +91,7 @@
     <ClInclude Include="..\..\platformAlg\CaculateAlg.h" />
     <ClInclude Include="..\..\platformAlg\Log.h" />
     <ClInclude Include="..\..\platformAlg\PlatFormAlgorithm.h" />
+    <ClInclude Include="..\..\platformAlg\stock2.h" />
     <ClInclude Include="..\..\platformAlg\Thread.h" />
     <ClInclude Include="..\..\platformAlg\ThreadPoolExecutor.h" />
   </ItemGroup>
