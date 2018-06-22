@@ -14,23 +14,23 @@
 
 using namespace std;
 
-#define LOG(cFormat, ...) \
-    CLog::logRecord(/*__FUNCTION__, __LINE__, __FILE__,  */cFormat, __VA_ARGS__);
-#define LOG_DATA(cFormat, ...) \
-    CLog::dataRecord(/*__FUNCTION__, __LINE__, __FILE__,  */cFormat, __VA_ARGS__);
-#define LOG_FLUSH() \
-	CLog::Flush()
-#define LOG_INIT() \
-	CLog::Init()
+#define FILTERDOC1  _T("alg1")
+#define FILTERDOC2  _T("alg2")
+#define FILTERDOC3  _T("alg3")
 
-
+enum e_doc_num
+{
+	e_doc_1,
+	e_doc_2,
+	e_doc_3
+};
 
 class CLog{
 public:
 	CLog();
 	~CLog();
 	void Init();
-	void Flush();
+	void Flush(int nNum);
 	void logRecord(/*string strFunc,int iLine, string strMod, */char* cFormat,...);
 	void dataRecord(/*string strFunc,int iLine, string strMod, */char* cFormat,...);
 	void clearLog();
