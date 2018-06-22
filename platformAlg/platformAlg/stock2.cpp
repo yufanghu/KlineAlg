@@ -23,8 +23,8 @@ bool CmpLowClosePri(const DataT& a, const DataT& b)
 }
 
 //计算最高或者最低收盘价
-bool CFilter2Alg::GetLowClose(const std::vector<tagKline>& itvDataBegin, int size,
-	tagKline& tagResult, bool bLow = false)
+bool CFilter2Alg::GetLowOrHighClose(const std::vector<tagKline>& itvDataBegin, int start, int end,
+	tagKline& tagResult, int& nPos,bool bLow /* = false */)
 {
 	// 如果价格相同，A就按照最低价排序， B1， B2 最高价排序
 	if (itvDataBegin.size() < 2)
@@ -38,16 +38,18 @@ bool CFilter2Alg::GetLowClose(const std::vector<tagKline>& itvDataBegin, int siz
 	if (bLow)
 	{
 		//获取最低收盘价
-		for (auto it = itvDataBegin.begin() + 1; it != itvDataBegin.end() && size-- > 0; ++it)
+		end = itvDataBegin.size() < end ? itvDataBegin.size() : end;
+		for (int i = start; i < end; ++i )
 		{
 			
-			if (tagResult.close > it->close)
+			if (tagResult.close > itvDataBegin[i].close)
 			{
-				tagResult = *it;
+				tagResult = itvDataBegin[i];
+				nPos = i;
 			}
-			else if (tagResult.close == it->close)
+			else if (tagResult.close == itvDataBegin[i].close)
 			{
-				tagResult = tagResult.low > it->close ? *it : tagResult;
+				tagResult = tagResult.low > itvDataBegin[i].close ? itvDataBegin[i] : tagResult;
 			}
 		}
 		
@@ -55,16 +57,16 @@ bool CFilter2Alg::GetLowClose(const std::vector<tagKline>& itvDataBegin, int siz
 	}
 	else
 	{
-		//获取最高收盘价  如果收盘价相同则最高价低的为最高收盘价 ？？
-		for (auto it = itvDataBegin.begin() + 1; it != itvDataBegin.end(); ++it)
+		//获取最高收盘价  如果收盘价相同则最高价低的为最高收盘价 
+		for (int i = start; i < end; ++i)
 		{
-			if (tagResult.close < it->close)
+			if (tagResult.close < itvDataBegin[i].close)
 			{
-				tagResult = *it;
+				tagResult = itvDataBegin[i];
 			}
-			else if (tagResult.close == it->close)
+			else if (tagResult.close == itvDataBegin[i].close)
 			{
-				tagResult = tagResult.high > it->high ? *it : tagResult;
+				tagResult = tagResult.high > itvDataBegin[i].high ? itvDataBegin[i] : tagResult;
 			}
 		}
 	}
@@ -107,6 +109,58 @@ bool CFilter2Alg::GetLow( std::vector<tagKline>::const_iterator itvDataBegin,
 
 
 
+bool CFilter2Alg::filterStepA1(const std::vector<tagKline>& vecKline, tagKline& tLowA, int& nApos, 
+		tagKline& tHighB1,int& nB1Pos,
+		tagKline& tHighB2, int& nB2Pos)
+{
+
+	//k线小于等于2，不处理
+	if (vecKline.size() <= 2)
+	{
+		m_pLog->logRecord("k线小于2\n");
+		return false;
+	}
+	tagKline tAPos;
+	bool bRet = true;
+	char buf[32];
+	bool bRet = GetLowOrHighClose(vecKline, 0,vecKline.size(), tAPos,nAPos, true);
+	if (!bRet || nAPos == vecKline.size() -1 )
+	{
+		m_pLog->logRecord("进阶筛选A1找不到最低数据\n");
+		bRet = false;
+	}
+
+	stamp_to_standard(tAPos.time, buf);
+	m_pLog->logRecord("进阶筛选A1收盘最低数据：%s open %f high %f low %f close %f \n", buf, tAPos.open, tAPos.high, tAPos.low, tAPos.close);
+
+
+	//搜索A数据日期前收盘价最高B1数据
+	tagKline tB1Pos;
+	bRet = GetLowOrHighClose(vecKline, 0, nAPos - 1, tB1Pos,nB1Pos, false);
+	if (!bRet)
+	{
+		m_pLog->logRecord("进阶筛选未找到最高收盘价B1\n");
+		bRet = false;
+	}
+	stamp_to_standard(tB1Pos.time, buf);
+	m_pLog->logRecord("进阶筛选B1收盘最高数据：%s open %f high %f low %f close %f \n", buf, tB1Pos.open, tB1Pos.high, tB1Pos.low, tB1Pos.close);
+
+	
+
+	//搜索A数据日期后收盘价最高B2数据
+	tagKline tB2Pos;
+	bRet = GetLowOrHighClose(vecKline, nAPos + 1, vecKline.size(), tB2Pos, nB2Pos, false);
+	if (!bRet)
+	{
+		m_pLog->logRecord("进阶筛选未找到最高收盘价B2\n");
+		bRet = false;
+	}
+	stamp_to_standard(tB2Pos.time, buf);
+	m_pLog->logRecord("进阶筛选B2收盘最高数据：%s open %f high %f low %f close %f \n", buf, tB2Pos.open, tB2Pos.high, tB2Pos.low, tB2Pos.close);
+	return bRet;
+}
+
+
 //获取阳线个数
 int CFilter2Alg::GetSunLineNum(std::vector<tagKline>::const_iterator itvDataBegin,
 	std::vector<tagKline>::const_iterator itvDataEnd)
@@ -140,63 +194,20 @@ bool CFilter2Alg::filter2Level1(const  std::map<tagStockCodeInfo, std::vector<ta
 		tFirFilter.sRbcoe);
 
 	std::map<tagStockCodeInfo, std::vector<tagKline>>::const_iterator iter;
+	bool bRet = true;
 	for (iter = inMap.begin(); iter != inMap.end(); ++iter)
 	{
-		//k线小于等于2，不处理
-		if (iter->second.size() <= 2)
-		{
-			m_pLog->logRecord("k线小于2\n");
-			continue;
-		}
+		
 
+		tagKline tLowA, tHighB1, tHighB2;
+		int nAPos = 0, nB1Pos = 0, nB2Pos = 0;  //A最低点位置
 		const std::vector<tagKline>  & vecKline = iter->second;
-		tagKline tAPos;
-		bool bRet = GetLowClose(vecKline, vecKline.size(), tAPos, true);
-		if ( !bRet )
+		bRet = filterStepA1(vecKline, tLowA,nAPos, tHighB1, nB1Pos, tHighB2 ,nB2Pos);
+		if (!bRet)
 		{
-			m_pLog->logRecord("进阶筛选A1找不到最低数据\n");
+			m_pLog->clearLog("进阶A1失败\n");
 			continue;
 		}
-
-		char buf[32];
-		stamp_to_standard(tAPos.time, buf);
-		m_pLog->logRecord("进阶筛选A1收盘最低数据：%s open %f high %f low %f close %f \n", buf, tAPos.open, tAPos.high, tAPos.low, tAPos.close);
-
-		//获取A 点迭代器
-		std::vector<tagKline>::const_iterator ptrmAPos = find(iter->second.begin(), iter->second.end(), tAPos);
-		if (ptrmAPos == vecKline.end())
-		{
-			m_pLog->logRecord("进阶筛选1未找到数据A\n");
-			continue;
-		}
-
-		//搜索A数据日期前收盘价最高B1数据
-		tagKline tB1Pos;
-		bRet = GetLowClose(vecKline, ptrmAPos - vecKline.begin(), tB1Pos, false);
-		if ( !bRet )
-		{
-			m_pLog->logRecord("进阶筛选未找到最高收盘价B1\n");
-			continue;
-		}
-		stamp_to_standard(tB1Pos.time, buf);
-		m_pLog->logRecord("进阶筛选B1收盘最高数据：%s open %f high %f low %f close %f \n", buf, tB1Pos.open, tB1Pos.high, tB1Pos.low, tB1Pos.close);
-
-		std::vector<tagKline>::const_iterator ptrmB1Pos = find(iter->second.begin(), iter->second.end(), tB1Pos);
-
-		//搜索A数据日期后收盘价最高B2数据
-
-		tagKline tB2Pos;
-		std::vector<tagKline>  vecKlineTmp;
-		vecKlineTmp.assign(ptrmAPos + 1, vecKline.end());
-		bRet = GetLowClose(vecKlineTmp, vecKlineTmp.size(), tB2Pos, false);
-		if ( !bRet)
-		{
-			m_pLog->logRecord("进阶筛选未找到最高收盘价B2\n");
-			continue;
-		}
-		stamp_to_standard(tB2Pos.time, buf);
-		m_pLog->logRecord("进阶筛选B2收盘最高数据：%s open %f high %f low %f close %f \n", buf, tB2Pos.open, tB2Pos.high, tB2Pos.low, tB2Pos.close);
-
 		
 		//条件B、筛选出数据B2（包含该数据）到数据末期，k线根数符合周期系数KB(6-8默认）范围内
 		std::vector<tagKline>::const_iterator ptrmB2Pos = find(vecKline.begin(), vecKline.end(), tB2Pos);
