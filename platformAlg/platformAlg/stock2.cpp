@@ -188,19 +188,29 @@ bool CFilter2Alg::filterStepA3(const std::vector<tagKline>& vecKline, TFilter& t
 		if (vecKline[nB2Pos].close >= vecKline[nB1Pos].close)
 		{
 			iDoubleType = eAA;
+			if( iDoubleType != tFirFilter.sA3Switch)
+			{
+				m_pLog->logRecord("当前类型:[%d] 和开关类型不同 [%d]\n", iDoubleType, tFirFilter.sA3Switch);
+				return false;
+			}
 			m_pLog->logRecord("筛选3 AA型\n");
 			return true;
 		}
 		else if (vecKline[nB2Pos].close < vecKline[nB1Pos].close)
 		{
 			iDoubleType = eAB;
+			if( iDoubleType != tFirFilter.sA3Switch)
+			{
+				m_pLog->logRecord("当前类型:[%d] 和开关类型不同 [%d]\n", iDoubleType, tFirFilter.sA3Switch);
+				return false;
+			}
 			m_pLog->logRecord("筛选3 AB型\n");
 			return true;
 		}
 
 	}
-	m_pLog->logRecord("当前类型:[%d] 和开关类型不同 [%d]\n", iDoubleType, tFirFilter.sA3Switch);
-	return false;
+	
+	return true;
 }
 
 bool CFilter2Alg::filterStepA4(const std::vector<tagKline>& vecKline, TFilter& tFirFilter, int nB1Pos, int nB2Pos, int & nL2Pos)
@@ -441,7 +451,6 @@ bool CFilter2Alg::filter2Level1(const  std::map<tagStockCodeInfo, std::vector<ta
 		
 		//返回一级筛选结果
 		tagOutput tOneItem;
-		tOneItem.eType = tFirFilter.sA3Switch;
 		output[iter->first] = tOneItem;
 	}
 	return true;

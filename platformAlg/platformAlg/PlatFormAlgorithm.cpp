@@ -4,6 +4,8 @@
 #include "stock2.h"
 #include "Log.h"
 
+
+
 bool select_entrance(const std::map<tagStockCodeInfo, std::vector<tagKline>>& input, std::map<tagStockCodeInfo, tagOutput>& output,
 	                             EPlatFormType platformType, short avgFac, bool bFiring)
 {
@@ -59,8 +61,7 @@ bool select_entrance(const std::map<tagStockCodeInfo, std::vector<tagKline>>& in
 
 
 //文档算法2
-bool  DoAlgorithm(std::map<tagStockCodeInfo, std::vector<tagKline>> &inMap, std::map<tagStockCodeInfo, tagOutput> & output, 
-	TFilter& filter, int nType)
+bool  DoAlgorithm(std::map<tagStockCodeInfo, std::vector<tagKline>> &inMap, std::map<tagStockCodeInfo, tagOutput> & output, TFilter& filter, EStock2Type type)
 {
 	CLog log;
 	log.Init();
@@ -68,15 +69,15 @@ bool  DoAlgorithm(std::map<tagStockCodeInfo, std::vector<tagKline>> &inMap, std:
 	calAlg.SetLogObj(&log);
 	bool bRet = false;
 
-	switch (nType)
+	switch (type)
 	{
-	case eFitler2First1:
+	case eStock2First:
 		bRet = calAlg.filter2Level1(inMap, output, filter);
 		break;
-	case  eFitler2First2:
+	case  eStock2Second:
 		bRet = calAlg.filter2Level2(inMap, output, filter);
 		break;
-	case eFitler2First3:
+	case eStock3Three:
 		bRet = calAlg.filter2Level3(inMap, output, filter);
 		break;
 
@@ -90,7 +91,7 @@ bool  DoAlgorithm(std::map<tagStockCodeInfo, std::vector<tagKline>> &inMap, std:
 		log.logRecord("筛选成功:");
 		for each (auto var in output)
 		{
-			log.logRecord("[%d-%s type [%d]],", var.first.market, var.first.stockcode.c_str(),var.second.eType);
+			log.logRecord("[%d-%s],", var.first.market, var.first.stockcode.c_str());
 		}
 		log.logRecord("\n");
 	}

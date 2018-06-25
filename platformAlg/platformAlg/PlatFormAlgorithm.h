@@ -29,6 +29,7 @@
 
 namespace alg{
 
+#pragma region 公共部分
 	//k线结构体
 	struct tagKline {
 		__int64 time;	//时间戳
@@ -54,72 +55,10 @@ namespace alg{
 		ePeriod1Min = 35   // 1分钟线
 	};
 
-	//平台枚举
-	enum EPlatFormType{
-		eSinglePlatForm,   //单平台
-		eDoublePlatForm,	//双平台
-		eFitler2First1,		//文档筛选2 一级筛选
-		eFitler2First2,    //文档晒选2 二级筛选
-		eFitler2First3    //文档筛选2 三级筛选
-	};
-
-	//筛选出的类型
-	enum eFilterType{
-		eOff,  //关闭
-		eAA,
-		eAB,
-		eAAP
-	};
-
-
-	struct TA2
-	{
-		short iMinka;  //最小KA
-		short iMaxka;  //最大KA
-		short iMinkb;  //最小KB
-		short iMaxkb;  //最大KB
-
-		TA2(){
-			iMinka = 0;
-			iMaxka = 0;
-			iMinkb = 0;
-			iMaxkb = 0;
-		};
-	};
-
-	//一级筛选
-	struct TFilter
-	{
-		TA2   tLineNum;
-		short  sA3Switch;       //A3步骤参数   0 -> off  1 -> AA   2 -> AB
-		bool  bA4Switch;        // A4步骤开关 
-		bool  bA5Switch;        // A5步骤开关
-		bool  bA6Switch;        // A6步骤开关	
-		short sCallbackRange;   //双底调整幅度  整数形式：1-99  
-		short sRbcoe;           //阳k线比例  整数形式：1-99
-		TFilter(){
-			bA4Switch = false;
-			bA5Switch = false;
-			bA6Switch = false;
-			sCallbackRange = 1;
-			sRbcoe = 1;
-			sA3Switch = 0;
-		};
-		
-	};
-
-
-
-
-
 	//输出结果信息 可扩展
 	struct tagOutput {
 		//std::vector<tagKline> klineVect;
 		//其他信息
-		int eType;
-		tagOutput(){
-			eType = eOff;
-		};
 	};
 
 	//股票基本信息
@@ -146,6 +85,78 @@ namespace alg{
 		}
 
 	};
+
+#pragma endregion 公共部分
+	
+
+#pragma region 算法一
+	//平台枚举
+	enum EPlatFormType{
+		eSinglePlatForm,    //单平台
+		eDoublePlatForm,    //双平台
+	};
+#pragma endregion 算法一
+
+
+#pragma region 算法二
+
+	//第几层
+	enum EStock2Type{
+		eStock2First,
+		eStock2Second,
+		eStock3Three
+	};
+
+	//筛选出的类型
+	enum EFilterType{
+		eOff,  //关闭
+		eAA,
+		eAB,
+		eAAP
+	};
+
+	struct TA2
+	{
+		short iMinka;  //最小KA
+		short iMaxka;  //最大KA
+		short iMinkb;  //最小KB
+		short iMaxkb;  //最大KB
+
+		TA2(){
+			iMinka = 0;
+			iMaxka = 0;
+			iMinkb = 0;
+			iMaxkb = 0;
+		};
+	};
+
+	//一级筛选
+	struct TFilter
+	{
+		TA2   tLineNum;
+		short  sA3Switch;       //A3步骤参数   0 -> off  1 -> AA   2 -> AB
+		bool  bA4Switch;        // A4步骤开关 
+		bool  bA5Switch;        // A5步骤开关
+		bool  bA6Switch;        // A6步骤开关	
+		short sCallbackRange;   //双底调整幅度  整数形式：1-99  
+		short sRbcoe;           //阳k线比例  整数形式：1-99
+		TFilter()
+		{
+			bA4Switch = false;
+			bA5Switch = false;
+			bA6Switch = false;
+			sCallbackRange = 1;
+			sRbcoe = 1;
+			sA3Switch = 0;
+		};
+
+	};
+
+
+#pragma endregion 算法二
+
+
+	
 }
 using namespace alg;
 
@@ -159,7 +170,7 @@ using namespace alg;
 *  @返回 true-成功 false-失败
 */
 //平台筛选接口
-bool select_entrance(const std::map<tagStockCodeInfo, std::vector<tagKline>> & input,
+bool alg_platform(const std::map<tagStockCodeInfo, std::vector<tagKline>> & input,
 	std::map<tagStockCodeInfo, tagOutput> & output, EPlatFormType platformType, short avgFac, bool bFiring =false);
 
 
@@ -172,9 +183,8 @@ bool select_entrance(const std::map<tagStockCodeInfo, std::vector<tagKline>> & i
 @param eType  输入参数	EPlatFormType 进阶筛选三个平台
 */
 /************************************************************************/
-bool  DoAlgorithm(std::map<tagStockCodeInfo, std::vector<tagKline>> &inMap,
-	std::map<tagStockCodeInfo, tagOutput> & output,
-	TFilter& filter, int eType = eFitler2First1);
+bool  alg_stock2(std::map<tagStockCodeInfo, std::vector<tagKline>> &inMap,
+	std::map<tagStockCodeInfo, tagOutput> & output, TFilter& filter, EStock2Type type);
 
 #endif
 

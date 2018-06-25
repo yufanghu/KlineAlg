@@ -23,7 +23,7 @@ void CLog::Flush(int nNum)
 	{
 		static int doc1 = 0;  //算法1
 		static int doc2 = 0;  //算法2
-		static int doc3 = 0;	//算法3
+		static int doc3 = 0;  //算法3
 		char buf[20] = { 0 };
 		stamp_to_standard(time(NULL), buf, "%Y_%m_%d_%H_%M_%S");
 

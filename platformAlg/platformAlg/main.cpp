@@ -104,7 +104,7 @@ int main(int argc, char* argv)
 	filter.bA6Switch = true;
 	filter.sCallbackRange = 100;
 	filter.sRbcoe = 10;
-	DoAlgorithm(input, output, filter, eFitler2First1);
+	//DoAlgorithm(input, output, filter, eStock3Three);
 
 
 
