@@ -90,15 +90,21 @@ void ReadKlineData(const char* path, std::vector<tagKline> & klineVector) {
 
 int main(int argc, char* argv)
 {
-	CPlatFormAlgorithm plat;
-	{
-		std::map<tagStockCodeInfo, std::vector<tagKline>>  input;
-		ReadKlineData("1.txt", input);
 
-		std::map<tagStockCodeInfo, tagOutput>  output;
-		
-		plat.select_entrance(input, output, eSinglePlatForm,10,false);
-	}
+	std::map<tagStockCodeInfo, std::vector<tagKline>>  input;
+	ReadKlineData("1526900149_0_log_data.txt", input);
+
+	std::map<tagStockCodeInfo, tagOutput>  output;
+
+	//select_entrance(input, output, eSinglePlatForm, 10, false);
+	TFilter filter;
+	filter.sA3Switch = eAA;
+	filter.bA4Switch = true;
+	filter.bA5Switch = true;
+	filter.bA6Switch = true;
+	filter.sCallbackRange = 100;
+	filter.sRbcoe = 10;
+	DoAlgorithm(input, output, filter, eFitler2First1);
 
 
 

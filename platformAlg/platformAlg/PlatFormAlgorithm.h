@@ -12,6 +12,21 @@
 #include <string>
 #include "Log.h"
 
+
+#define PERIODKAMIN     6
+#define PERIODKAMINB1   2
+#define PERIODKAMINC2   2
+#define PERIODKAMAX     9
+#define PERIODKAMAXB1   8
+#define PERIODKAMAXC1   8
+#define PERIODKBMIN     6
+#define PERIODKBMINB1   5
+#define PERIODKBMINC1   5
+#define PERIODKBMAX     8
+#define PERIODKBMAXB1   8
+#define PERIODKBMAXC1   8
+
+
 namespace alg{
 
 	//k线结构体
@@ -45,9 +60,16 @@ namespace alg{
 		eDoublePlatForm,	//双平台
 		eFitler2First1,		//文档筛选2 一级筛选
 		eFitler2First2,    //文档晒选2 二级筛选
-		eFitler2First3,    //文档筛选2 三级筛选
+		eFitler2First3    //文档筛选2 三级筛选
 	};
 
+	//筛选出的类型
+	enum eFilterType{
+		eOff,  //关闭
+		eAA,
+		eAB,
+		eAAP
+	};
 
 
 	struct TA2
@@ -58,48 +80,35 @@ namespace alg{
 		short iMaxkb;  //最大KB
 
 		TA2(){
-			iMinka = 6;
-			iMaxka = 9;
-			iMinkb = 6;
-			iMaxkb = 8;
-		}
+			iMinka = 0;
+			iMaxka = 0;
+			iMinkb = 0;
+			iMaxkb = 0;
+		};
 	};
 
 	//一级筛选
-	struct TFirstFilter
+	struct TFilter
 	{
 		TA2   tLineNum;
 		short  sA3Switch;       //A3步骤参数   0 -> off  1 -> AA   2 -> AB
 		bool  bA4Switch;        // A4步骤开关 
 		bool  bA5Switch;        // A5步骤开关
-		short sCallbackRange;   //双底调整幅度  整数形式：1-99  
 		bool  bA6Switch;        // A6步骤开关	
+		short sCallbackRange;   //双底调整幅度  整数形式：1-99  
 		short sRbcoe;           //阳k线比例  整数形式：1-99
-		TFirstFilter(){
-			sA3Switch = 0;
+		TFilter(){
 			bA4Switch = false;
 			bA5Switch = false;
 			bA6Switch = false;
 			sCallbackRange = 1;
 			sRbcoe = 1;
-		}
+			sA3Switch = 0;
+		};
+		
 	};
 
-	//二级筛选
-	struct TSecondFilter
-	{
-		TA2   tLineNum;
-		bool   bA5Switch;
-		short sCallbackRange;//双底调整幅度  整数形式：1-99
-	};
 
-	//三级筛选
-	struct TThirdFilter
-	{
-		TA2   tLineNum;
-		bool   bA5Switch;
-		short sCallbackRange;//双底调整幅度  整数形式：1-99
-	};
 
 
 
@@ -107,6 +116,10 @@ namespace alg{
 	struct tagOutput {
 		//std::vector<tagKline> klineVect;
 		//其他信息
+		int eType;
+		tagOutput(){
+			eType = eOff;
+		};
 	};
 
 	//股票基本信息
@@ -150,28 +163,18 @@ bool select_entrance(const std::map<tagStockCodeInfo, std::vector<tagKline>> & i
 	std::map<tagStockCodeInfo, tagOutput> & output, EPlatFormType platformType, short avgFac, bool bFiring =false);
 
 
-
-//删除级别开关，做第一级筛选，就调第一个接口，做第二级筛选，就调第二个接口，做第三级筛选，就调第三个接口
-////第一级筛选接口
-//bool DoAlgorithm(std::map<tagStockCodeInfo, std::vector<tagKline>> &inMap,
-//	std::map<tagStockCodeInfo, tagOutput> & output,
-//	TFirstFilter&);  //
-//
-////第二级筛选接口
-//bool DoAlgorithm(std::map<tagStockCodeInfo, std::vector<tagKline>> &inMap,
-//	std::map<tagStockCodeInfo, tagOutput> & output,
-//	TSecondFilter&);
-//
-////第三级筛选接口
-//bool DoAlgorithm(std::map<tagStockCodeInfo, std::vector<tagKline>> &inMap,
-//	std::map<tagStockCodeInfo, tagOutput> & output,
-//	TThirdFilter&);
-
-
-template<typename T> 
-bool bool DoAlgorithm(std::map<tagStockCodeInfo, std::vector<tagKline>> &inMap,
+/************************************************************************/
+/* 
+算法2
+@param inMap  输入参数  key-股票信息， value-k线集合
+@param output 输出参数  key-股票信息， value-存储股票类型 off   AA AB  AAP
+@param filter 输入参数  TFilter 用户选项默认均关闭
+@param eType  输入参数	EPlatFormType 进阶筛选三个平台
+*/
+/************************************************************************/
+bool  DoAlgorithm(std::map<tagStockCodeInfo, std::vector<tagKline>> &inMap,
 	std::map<tagStockCodeInfo, tagOutput> & output,
-	T&, int );
+	TFilter& filter, int eType = eFitler2First1);
 
 #endif
 

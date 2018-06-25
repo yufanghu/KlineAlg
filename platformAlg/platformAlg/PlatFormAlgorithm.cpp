@@ -4,9 +4,6 @@
 #include "stock2.h"
 #include "Log.h"
 
-
-
-
 bool select_entrance(const std::map<tagStockCodeInfo, std::vector<tagKline>>& input, std::map<tagStockCodeInfo, tagOutput>& output,
 	                             EPlatFormType platformType, short avgFac, bool bFiring)
 {
@@ -62,9 +59,8 @@ bool select_entrance(const std::map<tagStockCodeInfo, std::vector<tagKline>>& in
 
 
 //文档算法2
-template<typename T>
-bool bool DoAlgorithm(std::map<tagStockCodeInfo, std::vector<tagKline>> &inMap, std::map<tagStockCodeInfo, tagOutput> & output, 
-	T& filter, int nType)
+bool  DoAlgorithm(std::map<tagStockCodeInfo, std::vector<tagKline>> &inMap, std::map<tagStockCodeInfo, tagOutput> & output, 
+	TFilter& filter, int nType)
 {
 	CLog log;
 	log.Init();
@@ -94,7 +90,7 @@ bool bool DoAlgorithm(std::map<tagStockCodeInfo, std::vector<tagKline>> &inMap, 
 		log.logRecord("筛选成功:");
 		for each (auto var in output)
 		{
-			log.logRecord("[%d-%s],", var.first.market, var.first.stockcode.c_str());
+			log.logRecord("[%d-%s type [%d]],", var.first.market, var.first.stockcode.c_str(),var.second.eType);
 		}
 		log.logRecord("\n");
 	}
