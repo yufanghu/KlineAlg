@@ -10,7 +10,7 @@ bool select_entrance(const std::map<tagStockCodeInfo, std::vector<tagKline>>& in
 	                             EPlatFormType platformType, short avgFac, bool bFiring)
 {
 	CLog log;
-	log.Init();
+	log.Init("platform3_log");
 	CCaculateAlg calAlg; 
 	calAlg.SetLogObj(&log);
 	bool bRet= false;
@@ -24,7 +24,7 @@ bool select_entrance(const std::map<tagStockCodeInfo, std::vector<tagKline>>& in
 					bRet = calAlg.single_plat(input, output, avgFac, bFiring);
 					if (bRet)
 					{
-						log.Flush(e_doc_3);
+						log.Flush(e_doc_3,"platform3_log");
 						return false;
 					}
 					
@@ -34,7 +34,7 @@ bool select_entrance(const std::map<tagStockCodeInfo, std::vector<tagKline>>& in
 					bRet = calAlg.double_plat(input, output, avgFac, bFiring);
 					if (bRet)
 					{
-						log.Flush(e_doc_3);
+						log.Flush(e_doc_3,"platform3_log");
 						return false;
 					}
 					
@@ -55,36 +55,21 @@ bool select_entrance(const std::map<tagStockCodeInfo, std::vector<tagKline>>& in
 		}
 		log.logRecord("\n");
 	}
-	log.Flush(e_doc_3);
+	log.Flush(e_doc_3,"platform3_log");
 	return false;
 }
 
 
-//文档算法2
-bool  DoAlgorithm(std::map<tagStockCodeInfo, std::vector<tagKline>> &inMap, std::map<tagStockCodeInfo, tagOutput> & output, TFilter& filter, EStock2Type type)
+
+bool alg_stock2(std::map<tagStockCodeInfo, std::vector<tagKline>> &inMap, std::map<tagStockCodeInfo, tagOutput> & output, TFirstFilter& tFirFilter)
 {
 	CLog log;
-	log.Init();
+	log.Init("platform2_log");
 	CFilter2Alg calAlg;
 	calAlg.SetLogObj(&log);
 	bool bRet = false;
 
-	switch (type)
-	{
-	case eStock2First:
-		bRet = calAlg.filter2Level1(inMap, output, filter);
-		break;
-	case  eStock2Second:
-		bRet = calAlg.filter2Level2(inMap, output, filter);
-		break;
-	case eStock3Three:
-		bRet = calAlg.filter2Level3(inMap, output, filter);
-		break;
-
-	default:
-		break;
-	}
-
+	bRet = calAlg.filter2Level1(inMap, output, tFirFilter);
 	if (output.empty())
 		log.logRecord("没有找到匹配股票\n");
 	else{
@@ -95,9 +80,52 @@ bool  DoAlgorithm(std::map<tagStockCodeInfo, std::vector<tagKline>> &inMap, std:
 		}
 		log.logRecord("\n");
 	}
-	log.Flush(e_doc_3);
+	log.Flush(e_doc_3, "platform2_log");
 	return bRet;
 
+}
 
+bool alg_stock2(std::map<tagStockCodeInfo, std::vector<tagKline>> &inMap, std::map<tagStockCodeInfo, tagOutput> & output, TSecondFilter& filter)
+{
+	CLog log;
+	log.Init("platform2_log");
+	CFilter2Alg calAlg;
+	calAlg.SetLogObj(&log);
+	bool bRet = false;
+	bRet = calAlg.filter2Level2(inMap, output, filter);
+	if (output.empty())
+		log.logRecord("没有找到匹配股票\n");
+	else{
+		log.logRecord("筛选成功:");
+		for each (auto var in output)
+		{
+			log.logRecord("[%d-%s],", var.first.market, var.first.stockcode.c_str());
+		}
+		log.logRecord("\n");
+	}
+	log.Flush(e_doc_3, "platform2_log");
+	return bRet;
+}
+
+bool alg_stock2(std::map<tagStockCodeInfo, std::vector<tagKline>> &inMap, std::map<tagStockCodeInfo, tagOutput> & output, TThirdFilter& filter)
+{
+	CLog log;
+	log.Init("platform2_log");
+	CFilter2Alg calAlg;
+	calAlg.SetLogObj(&log);
+	bool bRet = false;
+	bRet = calAlg.filter2Level3(inMap, output, filter);
+	if (output.empty())
+		log.logRecord("没有找到匹配股票\n");
+	else{
+		log.logRecord("筛选成功:");
+		for each (auto var in output)
+		{
+			log.logRecord("[%d-%s],", var.first.market, var.first.stockcode.c_str());
+		}
+		log.logRecord("\n");
+	}
+	log.Flush(e_doc_3, "platform2_log");
+	return bRet;
 }
 

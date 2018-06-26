@@ -9,16 +9,17 @@ CLog::~CLog()
 {
 }
 
-void CLog::Init(){
+void CLog::Init(std::string strLog){
 	m_logBuffer = "";
 	m_dataBuffer = "";
 	m_logBuffer.shrink_to_fit();
 	m_dataBuffer.shrink_to_fit();
-	system("mkdir Platform_Log");
+	string strNew = "mkdir " + strLog;
+	system(strNew.c_str());
 }
 extern void stamp_to_standard(time_t stampTime, char* s, char* format = NULL);
 
-void CLog::Flush(int nNum)
+void CLog::Flush(int nNum,std::string strLog)
 {
 	{
 		static int doc1 = 0;  //Ëã·¨1
@@ -32,13 +33,13 @@ void CLog::Flush(int nNum)
 		switch (nNum)
 		{
 		case e_doc_1:
-			sprintf(name, "Platform_Log/%s_%s_%d_log.txt", buf, FILTERDOC1, doc1++);
+			sprintf(name, "%s/%s_%s_%d_log.txt",strLog.c_str(), buf, FILTERDOC1, doc1++);
 			break;
 		case e_doc_2:
-			sprintf(name, "Platform_Log/%s_%s_%d_log.txt", buf, FILTERDOC2, doc2++);
+			sprintf(name, "%s/%s_%s_%d_log.txt", strLog.c_str(), buf, FILTERDOC2, doc2++);
 			break;
 		case e_doc_3:
-			sprintf(name, "Platform_Log/%s_%s_%d_log.txt", buf, FILTERDOC3, doc3++);
+			sprintf(name, "%s/%s_%s_%d_log.txt", strLog.c_str(), buf, FILTERDOC3, doc3++);
 			break;
 		default:
 			break;

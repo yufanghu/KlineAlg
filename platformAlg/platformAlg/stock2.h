@@ -9,13 +9,13 @@ public:
 	~CFilter2Alg();
 	bool filter2Level1(const std::map<tagStockCodeInfo, std::vector<tagKline>> &inMap,
 		std::map<tagStockCodeInfo, tagOutput> & output,
-		TFilter& tFirFilter);
+		TFirstFilter& tFirFilter);
 	bool filter2Level2(const std::map<tagStockCodeInfo, std::vector<tagKline>> &inMap,
 		std::map<tagStockCodeInfo, tagOutput> & output,
-		TFilter& tSedFilter);
+		TSecondFilter& tSedFilter);
 	bool filter2Level3(const std::map<tagStockCodeInfo, std::vector<tagKline>> &inMap,
 		std::map<tagStockCodeInfo, tagOutput> & output,
-		TFilter& tThdFilter);
+		TThirdFilter& tThdFilter);
 	void SetLogObj(CLog * pLog){ m_pLog = pLog; }
 
 private:
@@ -38,10 +38,10 @@ private:
 		tagKline& tHighB2, int& nB2Pos);
 
 	bool filterStepA2(const std::vector<tagKline>& vecKline, TA2 period, int nAPos, int nB2Pos );
-	bool filterStepA3(const std::vector<tagKline>& vecKline, TFilter& tFirFilter, int nB2Pos, int nB1Pos);
-	bool filterStepA4(const std::vector<tagKline>& vecKline, TFilter& tFirFilter, int nB1Pos, int nB2Pos, int & nL2Pos);
-	bool filterStepA5(const std::vector<tagKline>& vecKline, TFilter& tFirFilter, int nAPos, int nB2Pos);
-	bool filterStepA6(const std::vector<tagKline>& vecKline, TFilter& tFirFilter, int nAPos);
+	bool filterStepA3(const std::vector<tagKline>& vecKline, TFirstFilter& tFirFilter, int nB2Pos, int nB1Pos);
+	bool filterStepA4(const std::vector<tagKline>& vecKline, TFirstFilter& tFirFilter, int nB1Pos, int nB2Pos, int & nL2Pos);
+	bool filterStepA5(const std::vector<tagKline>& vecKline, TFirstFilter& tFirFilter, int nAPos, int nB2Pos);
+	bool filterStepA6(const std::vector<tagKline>& vecKline, TFirstFilter& tFirFilter, int nAPos);
 
 
 private:

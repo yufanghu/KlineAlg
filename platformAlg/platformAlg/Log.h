@@ -29,8 +29,8 @@ class CLog{
 public:
 	CLog();
 	~CLog();
-	void Init();
-	void Flush(int nNum);
+	void Init(std::string strLog);
+	void Flush(int nNum, std::string strLog);
 	void logRecord(/*string strFunc,int iLine, string strMod, */char* cFormat,...);
 	void dataRecord(/*string strFunc,int iLine, string strMod, */char* cFormat,...);
 	void clearLog();

@@ -18,7 +18,8 @@ bool CFilter2Alg::GetLowOrHighClose(const std::vector<tagKline>& itvDataBegin, i
 		return false;
 	}
 
-	tagResult = itvDataBegin[0];
+	tagResult = itvDataBegin[start];
+	nPos = start;
 	if (bLow)
 	{
 		//获取最低收盘价
@@ -76,14 +77,22 @@ bool CFilter2Alg::GetLow( std::vector<tagKline>::const_iterator itvDataBegin,
         return false;
     }
 
+	int i = 0;
 	tResult = *itvDataBegin;
-	for (auto it = itvDataBegin + 1; it != itvDataEnd; ++it)
+	auto it = itvDataBegin + 1;
+	for ( ; it != itvDataEnd; ++it,++i)
 	{
+
 		if (tResult.low > it->low)
 		{
 			tResult = *it;
 		}
 		
+	}
+	if ( i == itvDataEnd - itvDataBegin)
+	{
+		m_pLog->logRecord("B2就是末尾数据\n");
+		return false;
 	}
 
     return true;
@@ -108,14 +117,20 @@ bool CFilter2Alg::filterStepA1(const std::vector<tagKline>& vecKline, tagKline& 
 	bool bRet = true;
 	char buf[32];
 	bRet = GetLowOrHighClose(vecKline, 0, vecKline.size(), tAPos, nAPos, true);
-	if (!bRet || nAPos == vecKline.size() -1 || nAPos == 0 )
+	if (nAPos == vecKline.size() - 1 || nAPos == 0)
 	{
 		m_pLog->logRecord("进阶筛选A1为首尾\n");
 		return false;
 	}
+	
+	if (!bRet  )
+	{
+		m_pLog->logRecord("未找到A\n");
+		return false;
+	}
 
 	stamp_to_standard(tAPos.time, buf);
-	m_pLog->logRecord("进阶筛选A1收盘最低数据：%s open %f high %f low %f close %f \n", buf, tAPos.open, tAPos.high, tAPos.low, tAPos.close);
+	m_pLog->logRecord("进阶筛选A1收盘最低数据：pos:%d %s open %f high %f low %f close %f \n",nAPos, buf, tAPos.open, tAPos.high, tAPos.low, tAPos.close);
 
 
 	//搜索A数据日期前收盘价最高B1数据
@@ -127,7 +142,7 @@ bool CFilter2Alg::filterStepA1(const std::vector<tagKline>& vecKline, tagKline& 
 		return false;
 	}
 	stamp_to_standard(tB1Pos.time, buf);
-	m_pLog->logRecord("进阶筛选B1收盘最高数据：%s open %f high %f low %f close %f \n", buf, tB1Pos.open, tB1Pos.high, tB1Pos.low, tB1Pos.close);
+	m_pLog->logRecord("进阶筛选B1收盘最高数据：pos:%d %s open %f high %f low %f close %f \n",nB1Pos, buf, tB1Pos.open, tB1Pos.high, tB1Pos.low, tB1Pos.close);
 
 	
 
@@ -140,7 +155,7 @@ bool CFilter2Alg::filterStepA1(const std::vector<tagKline>& vecKline, tagKline& 
 		return false;
 	}
 	stamp_to_standard(tB2Pos.time, buf);
-	m_pLog->logRecord("进阶筛选B2收盘最高数据：%s open %f high %f low %f close %f \n", buf, tB2Pos.open, tB2Pos.high, tB2Pos.low, tB2Pos.close);
+	m_pLog->logRecord("进阶筛选B2收盘最高数据：pos:%d %s open %f high %f low %f close %f \n", nB2Pos,buf, tB2Pos.open, tB2Pos.high, tB2Pos.low, tB2Pos.close);
 	return true;
 }
 
@@ -160,19 +175,22 @@ bool CFilter2Alg::filterStepA2(const std::vector<tagKline>& vecKline, TA2 period
 	int nAPeriod = nB2Pos - nAPos + 1;
 	if ( nAPeriod < period.iMinka || nAPeriod > period.iMaxka)
 	{
+		m_pLog->logRecord("A-B2 K线数[%d] 不在范围[%d]-[%d]\n", nAPeriod, period.iMinka, period.iMaxka);
 		return false;
 	}
+	m_pLog->logRecord("A-B2 K线数[%d] 满足[%d]-[%d]\n", nAPeriod, period.iMinka, period.iMaxka);
 	//条件B、筛选出数据B2（包含该数据）到数据末期，k线根数符合周期系数KB(6-8默认）范围内
 	int nBPeriod = vecKline.size() - nB2Pos + 1;
 	if (nBPeriod < period.iMinkb || nBPeriod > period.iMaxkb)
 	{
+		m_pLog->logRecord("末尾-B2 K线数[%d] 不在范围[%d]-[%d]\n", nBPeriod, period.iMinkb, period.iMaxkb);
 		return false;
 	}
-	
+	m_pLog->logRecord("末尾-B2 K线数[%d] 满足[%d]-[%d]\n", nBPeriod, period.iMinkb, period.iMaxkb);
 	return true;
 }
 
-bool CFilter2Alg::filterStepA3(const std::vector<tagKline>& vecKline, TFilter& tFirFilter, int nB2Pos, int nB1Pos)
+bool CFilter2Alg::filterStepA3(const std::vector<tagKline>& vecKline, TFirstFilter& tFirFilter, int nB2Pos, int nB1Pos)
 {
 	/*
 	进阶筛选（A3）(备注：用户选择项，默认开关OF，用于双底类型筛选)
@@ -213,7 +231,7 @@ bool CFilter2Alg::filterStepA3(const std::vector<tagKline>& vecKline, TFilter& t
 	return true;
 }
 
-bool CFilter2Alg::filterStepA4(const std::vector<tagKline>& vecKline, TFilter& tFirFilter, int nB1Pos, int nB2Pos, int & nL2Pos)
+bool CFilter2Alg::filterStepA4(const std::vector<tagKline>& vecKline, TFirstFilter& tFirFilter, int nB1Pos, int nB2Pos, int & nL2Pos)
 {
 	/*
 	进阶筛选（A4）（备注，用户选择项，默认开关0F,用于双平台选择）
@@ -225,10 +243,13 @@ bool CFilter2Alg::filterStepA4(const std::vector<tagKline>& vecKline, TFilter& t
 	//筛选4 : 假如是AA型，就只用AA型的数据  
 	
 	//筛选出B2数据后最低收盘价格L2数据（不包括B2数据）
-	std::vector<tagKline> vecKlineTmp;
-	vecKlineTmp.assign(vecKline.begin()+nB2Pos, vecKline.end());
+	if (tFirFilter.sA3Switch != eAA)
+	{
+		m_pLog->logRecord("筛选4 不是AA型");
+		return true;
+	}
 	tagKline tL2Pos;
-	bool bRet = GetLowOrHighClose(vecKlineTmp, nB2Pos, vecKline.size(), tL2Pos, nL2Pos, true);
+	bool bRet = GetLowOrHighClose(vecKline, nB2Pos, vecKline.size(), tL2Pos, nL2Pos, true);
 	if (!bRet)
 	{
 		m_pLog->logRecord("筛选4 没有L2\n");
@@ -245,10 +266,12 @@ bool CFilter2Alg::filterStepA4(const std::vector<tagKline>& vecKline, TFilter& t
 		return false;
 	}
 
+
+	m_pLog->logRecord("筛选4 最低收盘价格L2 open:%f  high:% low:%f clos:%f\n",tL2Pos.open, tL2Pos.high,tL2Pos.low,tL2Pos.close);
 	return true;
 }
 
-bool CFilter2Alg::filterStepA5(const std::vector<tagKline>& vecKline, TFilter& tFirFilter, int nAPos, int nB2Pos)
+bool CFilter2Alg::filterStepA5(const std::vector<tagKline>& vecKline, TFirstFilter& tFirFilter, int nAPos, int nB2Pos)
 {
 	//筛选5
 
@@ -271,6 +294,7 @@ bool CFilter2Alg::filterStepA5(const std::vector<tagKline>& vecKline, TFilter& t
 	{
 		m_pLog->logRecord("筛选A5失败,h1 is 0\n");
 		return false;
+
 	}
 	double ht = h2 / h1;
 	if (ht > static_cast<double>(tFirFilter.sCallbackRange / 100))
@@ -279,12 +303,14 @@ bool CFilter2Alg::filterStepA5(const std::vector<tagKline>& vecKline, TFilter& t
 		return false;
 	}
 
+
+	m_pLog->logRecord("筛选A5成功,ht[%f] callbackRange :[%f]\n", ht, static_cast<double>(tFirFilter.sCallbackRange / 100));
 	return true;
 
 
 }
 
-bool CFilter2Alg::filterStepA6(const std::vector<tagKline>& vecKline, TFilter& tFirFilter, int nAPos)
+bool CFilter2Alg::filterStepA6(const std::vector<tagKline>& vecKline, TFirstFilter& tFirFilter, int nAPos)
 {
 
 	//筛选6
@@ -319,6 +345,7 @@ bool CFilter2Alg::filterStepA6(const std::vector<tagKline>& vecKline, TFilter& t
 		return false;
 	}
 	
+	m_pLog->logRecord("筛选6 rb:[%f] sRbcore[%r]\n ", iSunlineNum, static_cast<double>(tFirFilter.sRbcoe / 100));
 	return true;
 }
 
@@ -352,7 +379,7 @@ CFilter2Alg::~CFilter2Alg()
 }
 
 bool CFilter2Alg::filter2Level1(const  std::map<tagStockCodeInfo, std::vector<tagKline>> &inMap,
-	std::map<tagStockCodeInfo, tagOutput> & output, TFilter& tFirFilter)
+	std::map<tagStockCodeInfo, tagOutput> & output, TFirstFilter& tFirFilter)
 {
 
 
@@ -450,8 +477,7 @@ bool CFilter2Alg::filter2Level1(const  std::map<tagStockCodeInfo, std::vector<ta
 		}
 		
 		//返回一级筛选结果
-		tagOutput tOneItem;
-		output[iter->first] = tOneItem;
+		output[iter->first] = tagOutput();
 	}
 	return true;
 
@@ -459,7 +485,7 @@ bool CFilter2Alg::filter2Level1(const  std::map<tagStockCodeInfo, std::vector<ta
 	
 
 bool CFilter2Alg::filter2Level2(const std::map<tagStockCodeInfo, std::vector<tagKline>> &inMap,
-	std::map<tagStockCodeInfo, tagOutput> & output, TFilter& tSedFilter)
+	std::map<tagStockCodeInfo, tagOutput> & output, TSecondFilter& tSedFilter)
 {
 
 
@@ -479,7 +505,7 @@ bool CFilter2Alg::filter2Level2(const std::map<tagStockCodeInfo, std::vector<tag
 	bool bRet = true;
 	for (iter = inMap.begin(); iter != inMap.end(); ++iter)
 	{
-		m_pLog->logRecord("市场：[%d] 代码：[%s]\n", iter->first.market, iter->first.stockcode);
+		m_pLog->logRecord("市场：[%d] 代码：[%s]\n", iter->first.market, iter->first.stockcode.c_str());
 		tagKline tLowA, tHighB1, tHighB2;
 		int nAPos = 0, nB1Pos = 0, nB2Pos = 0,  nL2Pos = 0;  //A最低点位置
 		const std::vector<tagKline>  & vecKline = iter->second;
@@ -502,7 +528,11 @@ bool CFilter2Alg::filter2Level2(const std::map<tagStockCodeInfo, std::vector<tag
 		}
 		else
 		{
-			bRet = filterStepA5(vecKline, tSedFilter, nAPos, nB2Pos);
+			TFirstFilter tFilter;
+			tFilter.tLineNum = tSedFilter.tLineNum;
+			tFilter.bA5Switch = tSedFilter.bA5Switch;
+			tFilter.sCallbackRange = tSedFilter.sCallbackRange;
+			bRet = filterStepA5(vecKline, tFilter, nAPos, nB2Pos);
 			if (!bRet)
 			{
 				continue;
@@ -517,7 +547,7 @@ bool CFilter2Alg::filter2Level2(const std::map<tagStockCodeInfo, std::vector<tag
 
 
 bool CFilter2Alg::filter2Level3(const std::map<tagStockCodeInfo, std::vector<tagKline>> &inMap, 
-	std::map<tagStockCodeInfo, tagOutput> & output, TFilter& tThdFilter)
+	std::map<tagStockCodeInfo, tagOutput> & output, TThirdFilter& tThdFilter)
 {
 	m_pLog->logRecord("三级筛选\n");
 	TA2 tPer = tThdFilter.tLineNum;
@@ -538,7 +568,7 @@ bool CFilter2Alg::filter2Level3(const std::map<tagStockCodeInfo, std::vector<tag
 	bool bRet = true;
 	for (iter = inMap.begin(); iter != inMap.end(); ++iter)
 	{
-		m_pLog->logRecord("市场：[%d] 代码：[%s]\n", iter->first.market, iter->first.stockcode);
+		m_pLog->logRecord("市场：[%d] 代码：[%s]\n", iter->first.market, iter->first.stockcode.c_str());
 		tagKline tLowA, tHighB1, tHighB2;
 		int nAPos = 0, nB1Pos = 0, nB2Pos = 0, nL2Pos = 0;  //A最低点位置
 		const std::vector<tagKline>  & vecKline = iter->second;
@@ -561,7 +591,11 @@ bool CFilter2Alg::filter2Level3(const std::map<tagStockCodeInfo, std::vector<tag
 		}
 		else
 		{
-			bRet = filterStepA5(vecKline, tThdFilter, nAPos, nB2Pos);
+			TFirstFilter tFilter;
+			tFilter.tLineNum = tThdFilter.tLineNum;
+			tFilter.bA5Switch = tThdFilter.bA5Switch;
+			tFilter.sCallbackRange = tThdFilter.sCallbackRange;
+			bRet = filterStepA5(vecKline, tFilter, nAPos, nB2Pos);
 			if (!bRet)
 			{
 				continue;

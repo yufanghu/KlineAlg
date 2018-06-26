@@ -5,6 +5,7 @@
 描述		: K线平台算法实现类
 **************************************/
 #include "PlatFormAlgorithm.h"
+#include "AlgBase.h"
 
 #define  DEADLINE_DATE "20181231"
 

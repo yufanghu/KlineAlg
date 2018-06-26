@@ -100,12 +100,6 @@ namespace alg{
 
 #pragma region 算法二
 
-	//第几层
-	enum EStock2Type{
-		eStock2First,
-		eStock2Second,
-		eStock3Three
-	};
 
 	//筛选出的类型
 	enum EFilterType{
@@ -122,34 +116,40 @@ namespace alg{
 		short iMinkb;  //最小KB
 		short iMaxkb;  //最大KB
 
-		TA2(){
-			iMinka = 0;
-			iMaxka = 0;
-			iMinkb = 0;
-			iMaxkb = 0;
-		};
+		TA2():iMaxkb(0),iMaxka(0), iMinkb(0), iMinka(0){};
 	};
 
+
 	//一级筛选
-	struct TFilter
+	struct TFirstFilter
 	{
 		TA2   tLineNum;
 		short  sA3Switch;       //A3步骤参数   0 -> off  1 -> AA   2 -> AB
 		bool  bA4Switch;        // A4步骤开关 
 		bool  bA5Switch;        // A5步骤开关
-		bool  bA6Switch;        // A6步骤开关	
 		short sCallbackRange;   //双底调整幅度  整数形式：1-99  
+		bool  bA6Switch;        // A6步骤开关	
 		short sRbcoe;           //阳k线比例  整数形式：1-99
-		TFilter()
-		{
-			bA4Switch = false;
-			bA5Switch = false;
-			bA6Switch = false;
-			sCallbackRange = 1;
-			sRbcoe = 1;
-			sA3Switch = 0;
-		};
+		TFirstFilter() :sA3Switch(0), bA4Switch(false), bA5Switch(false), 
+			sCallbackRange(1), bA6Switch(false), sRbcoe(1){};
+	};
 
+	//二级筛选
+	struct TSecondFilter
+	{
+		TA2   tLineNum;
+		bool   bA5Switch;
+		short sCallbackRange;//双底调整幅度  整数形式：1-99
+		TSecondFilter() :bA5Switch(false), sCallbackRange(1){};
+	};
+
+	//三级筛选
+	struct TThirdFilter
+	{
+		TA2   tLineNum;
+		bool   bA5Switch;
+		short sCallbackRange;//双底调整幅度  整数形式：1-99
+		TThirdFilter() :bA5Switch(false), sCallbackRange(1){};
 	};
 
 
@@ -184,7 +184,11 @@ bool alg_platform(const std::map<tagStockCodeInfo, std::vector<tagKline>> & inpu
 */
 /************************************************************************/
 bool  alg_stock2(std::map<tagStockCodeInfo, std::vector<tagKline>> &inMap,
-	std::map<tagStockCodeInfo, tagOutput> & output, TFilter& filter, EStock2Type type);
+	std::map<tagStockCodeInfo, tagOutput> & output, TFirstFilter& tFirFilter);
+bool  alg_stock2(std::map<tagStockCodeInfo, std::vector<tagKline>> &inMap,
+	std::map<tagStockCodeInfo, tagOutput> & output, TSecondFilter& filter);
+bool  alg_stock2(std::map<tagStockCodeInfo, std::vector<tagKline>> &inMap,
+	std::map<tagStockCodeInfo, tagOutput> & output, TThirdFilter& filter);
 
 #endif
 

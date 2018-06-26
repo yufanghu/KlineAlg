@@ -79,6 +79,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\platformAlg\AlgBase.cpp" />
     <ClCompile Include="..\..\platformAlg\CaculateAlg.cpp" />
     <ClCompile Include="..\..\platformAlg\Log.cpp" />
     <ClCompile Include="..\..\platformAlg\main.cpp" />
@@ -88,6 +89,7 @@
     <ClCompile Include="..\..\platformAlg\ThreadPoolExecutor.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\platformAlg\AlgBase.h" />
     <ClInclude Include="..\..\platformAlg\CaculateAlg.h" />
     <ClInclude Include="..\..\platformAlg\Log.h" />
     <ClInclude Include="..\..\platformAlg\PlatFormAlgorithm.h" />
