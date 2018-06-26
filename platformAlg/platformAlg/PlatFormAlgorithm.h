@@ -185,8 +185,10 @@ bool alg_platform(const std::map<tagStockCodeInfo, std::vector<tagKline>> & inpu
 /************************************************************************/
 bool  alg_stock2(std::map<tagStockCodeInfo, std::vector<tagKline>> &inMap,
 	std::map<tagStockCodeInfo, tagOutput> & output, TFirstFilter& tFirFilter);
+
 bool  alg_stock2(std::map<tagStockCodeInfo, std::vector<tagKline>> &inMap,
 	std::map<tagStockCodeInfo, tagOutput> & output, TSecondFilter& filter);
+
 bool  alg_stock2(std::map<tagStockCodeInfo, std::vector<tagKline>> &inMap,
 	std::map<tagStockCodeInfo, tagOutput> & output, TThirdFilter& filter);
 

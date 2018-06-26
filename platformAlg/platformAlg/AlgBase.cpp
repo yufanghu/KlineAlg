@@ -66,15 +66,15 @@ CAlg3::CAlg3(std::map<tagStockCodeInfo, std::vector<tagKline>> &inMap, std::map<
 
 CAlg3::CAlg3(std::map<tagStockCodeInfo, std::vector<tagKline>> &inMap, std::map<tagStockCodeInfo, tagOutput> & output, TFirstFilter& tFirFilter)
 {
-
+	m_step = eStep1;
 }
 
 CAlg3::CAlg3(std::map<tagStockCodeInfo, std::vector<tagKline>> &inMap, std::map<tagStockCodeInfo, tagOutput> & output, TSecondFilter& tFirFilter)
 {
-
+	m_step = eStep2;
 }
 
 CAlg3::CAlg3(std::map<tagStockCodeInfo, std::vector<tagKline>> &inMap, std::map<tagStockCodeInfo, tagOutput> & output, TThirdFilter& tFirFilter)
 {
-
+	m_step = eStep3;
 }

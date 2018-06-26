@@ -11,7 +11,7 @@ public:
 	virtual bool createNewAlg() = 0;
 };
 
-class CAlg3:public CAlgBase
+class CAlg3 : public CAlgBase
 {
 public:
 	CAlg3(std::map<tagStockCodeInfo, std::vector<tagKline>> &inMap,
@@ -21,13 +21,27 @@ public:
 	CAlg3(std::map<tagStockCodeInfo, std::vector<tagKline>> &inMap,
 		std::map<tagStockCodeInfo, tagOutput> & output, TThirdFilter& tFirFilter);
 	~CAlg3();
-	virtual bool createNewAlg();
+
+	virtual bool createNewAlg() override;
 
 private:
+
+	enum EAlgStep{
+		eStep1,
+		eStep2,
+		eStep3
+	};
+
 	std::map<tagStockCodeInfo, std::vector<tagKline>>* m_inMap;
 	std::map<tagStockCodeInfo, tagOutput> * m_output;
+
 	TFirstFilter* m_tFirFilter;
+
 	TSecondFilter* m_tSecFilter;
+
 	TThirdFilter* m_tTirFilter;
+
+	EAlgStep m_step;
+	
 };
 
