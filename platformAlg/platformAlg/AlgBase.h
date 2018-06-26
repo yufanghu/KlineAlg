@@ -8,14 +8,26 @@ class CAlgBase
 public:
 	CAlgBase();
 	virtual ~CAlgBase();
-	virtual bool createNewAlg( ) = 0;
+	virtual bool createNewAlg() = 0;
 };
 
-class CAlg1
+class CAlg3:public CAlgBase
 {
 public:
-	CAlg1();
-	~CAlg1();
+	CAlg3(std::map<tagStockCodeInfo, std::vector<tagKline>> &inMap,
+		std::map<tagStockCodeInfo, tagOutput> & output, TFirstFilter& tFirFilter);
+	CAlg3(std::map<tagStockCodeInfo, std::vector<tagKline>> &inMap,
+		std::map<tagStockCodeInfo, tagOutput> & output, TSecondFilter& tFirFilter);
+	CAlg3(std::map<tagStockCodeInfo, std::vector<tagKline>> &inMap,
+		std::map<tagStockCodeInfo, tagOutput> & output, TThirdFilter& tFirFilter);
+	~CAlg3();
 	virtual bool createNewAlg();
+
+private:
+	std::map<tagStockCodeInfo, std::vector<tagKline>>* m_inMap;
+	std::map<tagStockCodeInfo, tagOutput> * m_output;
+	TFirstFilter* m_tFirFilter;
+	TSecondFilter* m_tSecFilter;
+	TThirdFilter* m_tTirFilter;
 };
 

@@ -63,69 +63,23 @@ bool select_entrance(const std::map<tagStockCodeInfo, std::vector<tagKline>>& in
 
 bool alg_stock2(std::map<tagStockCodeInfo, std::vector<tagKline>> &inMap, std::map<tagStockCodeInfo, tagOutput> & output, TFirstFilter& tFirFilter)
 {
-	CLog log;
-	log.Init("platform2_log");
-	CFilter2Alg calAlg;
-	calAlg.SetLogObj(&log);
-	bool bRet = false;
-
-	bRet = calAlg.filter2Level1(inMap, output, tFirFilter);
-	if (output.empty())
-		log.logRecord("没有找到匹配股票\n");
-	else{
-		log.logRecord("筛选成功:");
-		for each (auto var in output)
-		{
-			log.logRecord("[%d-%s],", var.first.market, var.first.stockcode.c_str());
-		}
-		log.logRecord("\n");
-	}
-	log.Flush(e_doc_3, "platform2_log");
-	return bRet;
+	CAlgBase *pBase = new CAlg3(inMap,output, tFirFilter, 1);
+	pBase->createNewAlg();
+	return true;
 
 }
 
 bool alg_stock2(std::map<tagStockCodeInfo, std::vector<tagKline>> &inMap, std::map<tagStockCodeInfo, tagOutput> & output, TSecondFilter& filter)
 {
-	CLog log;
-	log.Init("platform2_log");
-	CFilter2Alg calAlg;
-	calAlg.SetLogObj(&log);
-	bool bRet = false;
-	bRet = calAlg.filter2Level2(inMap, output, filter);
-	if (output.empty())
-		log.logRecord("没有找到匹配股票\n");
-	else{
-		log.logRecord("筛选成功:");
-		for each (auto var in output)
-		{
-			log.logRecord("[%d-%s],", var.first.market, var.first.stockcode.c_str());
-		}
-		log.logRecord("\n");
-	}
-	log.Flush(e_doc_3, "platform2_log");
-	return bRet;
+	CAlgBase *pBase = new CAlg3(inMap, output, tFirFilter, 1);
+	pBase->createNewAlg();
+	return true;
 }
 
 bool alg_stock2(std::map<tagStockCodeInfo, std::vector<tagKline>> &inMap, std::map<tagStockCodeInfo, tagOutput> & output, TThirdFilter& filter)
 {
-	CLog log;
-	log.Init("platform2_log");
-	CFilter2Alg calAlg;
-	calAlg.SetLogObj(&log);
-	bool bRet = false;
-	bRet = calAlg.filter2Level3(inMap, output, filter);
-	if (output.empty())
-		log.logRecord("没有找到匹配股票\n");
-	else{
-		log.logRecord("筛选成功:");
-		for each (auto var in output)
-		{
-			log.logRecord("[%d-%s],", var.first.market, var.first.stockcode.c_str());
-		}
-		log.logRecord("\n");
-	}
-	log.Flush(e_doc_3, "platform2_log");
-	return bRet;
+	CAlgBase *pBase = new CAlg3(inMap, output, tFirFilter, 1);
+	pBase->createNewAlg();
+	return true;
 }
 
