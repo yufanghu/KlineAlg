@@ -245,7 +245,7 @@ bool CFilter2Alg::filterStepA4(const std::vector<tagKline>& vecKline, TFirstFilt
 	//筛选出B2数据后最低收盘价格L2数据（不包括B2数据）
 	if (tFirFilter.sA3Switch != eAA)
 	{
-		m_pLog->logRecord("筛选4 不是AA型");
+		m_pLog->logRecord("筛选4 不是AA型\n");
 		return true;
 	}
 	tagKline tL2Pos;
@@ -258,7 +258,8 @@ bool CFilter2Alg::filterStepA4(const std::vector<tagKline>& vecKline, TFirstFilt
 
 	if (tL2Pos.close > vecKline[nB1Pos].close)
 	{
-		tFirFilter.sA3Switch = eAAP; //AAP
+		//tFirFilter.sA3Switch = eAAP; //AAP
+		m_pLog->logRecord("筛选4 AAP型\n");
 	}
 	else
 	{
@@ -267,7 +268,7 @@ bool CFilter2Alg::filterStepA4(const std::vector<tagKline>& vecKline, TFirstFilt
 	}
 
 
-	m_pLog->logRecord("筛选4 最低收盘价格L2 open:%f  high:% low:%f clos:%f\n",tL2Pos.open, tL2Pos.high,tL2Pos.low,tL2Pos.close);
+	m_pLog->logRecord("筛选4 最低收盘价格L2 open:%f  high:%f  low:%f clos:%f\n",tL2Pos.open, tL2Pos.high,tL2Pos.low,tL2Pos.close);
 	return true;
 }
 
@@ -297,14 +298,14 @@ bool CFilter2Alg::filterStepA5(const std::vector<tagKline>& vecKline, TFirstFilt
 
 	}
 	double ht = h2 / h1;
-	if (ht > static_cast<double>(tFirFilter.sCallbackRange / 100))
+	if (ht > (float)tFirFilter.sCallbackRange / 100)
 	{
-		m_pLog->logRecord("筛选A5失败,ht[%f]不满足条件\n", ht);
+		m_pLog->logRecord("筛选A5失败,ht[%f]不满足 > sCallBackRange [%f]\n", ht, (float)tFirFilter.sCallbackRange / 100);
 		return false;
 	}
 
 
-	m_pLog->logRecord("筛选A5成功,ht[%f] callbackRange :[%f]\n", ht, static_cast<double>(tFirFilter.sCallbackRange / 100));
+	m_pLog->logRecord("筛选A5成功,ht[%f] callbackRange :[%f]\n", ht, (float)tFirFilter.sCallbackRange / 100);
 	return true;
 
 
@@ -339,13 +340,13 @@ bool CFilter2Alg::filterStepA6(const std::vector<tagKline>& vecKline, TFirstFilt
 	
 
 	//todo: 筛选条件 大于等于命中
-	if (rb < static_cast<double>(tFirFilter.sRbcoe / 100))
+	if (rb < (float)tFirFilter.sRbcoe / 100)
 	{
-		m_pLog->logRecord("rb[%f] < 输入  rb\n", rb);
+		m_pLog->logRecord("筛选6失败： rb[%f] < 输入  rb\n", rb);
 		return false;
 	}
 	
-	m_pLog->logRecord("筛选6 rb:[%f] sRbcore[%r]\n ", iSunlineNum, static_cast<double>(tFirFilter.sRbcoe / 100));
+	m_pLog->logRecord("筛选6成功 rb:[%f] > sRbcore[%f]\n ", rb, (float)tFirFilter.sRbcoe / 100);
 	return true;
 }
 
@@ -399,7 +400,7 @@ bool CFilter2Alg::filter2Level1(const  std::map<tagStockCodeInfo, std::vector<ta
 	bool bRet = true;
 	for (iter = inMap.begin(); iter != inMap.end(); ++iter)
 	{
-		
+		m_pLog->logRecord("\n");
 		m_pLog->logRecord("市场：[%d] 代码：[%s]\n", iter->first.market, iter->first.stockcode.c_str());
 		tagKline tLowA, tHighB1, tHighB2;
 		int nAPos = 0, nB1Pos = 0, nB2Pos = 0, nL2Pos = 0;  //A最低点位置
@@ -505,6 +506,7 @@ bool CFilter2Alg::filter2Level2(const std::map<tagStockCodeInfo, std::vector<tag
 	bool bRet = true;
 	for (iter = inMap.begin(); iter != inMap.end(); ++iter)
 	{
+		m_pLog->logRecord("\n");
 		m_pLog->logRecord("市场：[%d] 代码：[%s]\n", iter->first.market, iter->first.stockcode.c_str());
 		tagKline tLowA, tHighB1, tHighB2;
 		int nAPos = 0, nB1Pos = 0, nB2Pos = 0,  nL2Pos = 0;  //A最低点位置
@@ -558,16 +560,13 @@ bool CFilter2Alg::filter2Level3(const std::map<tagStockCodeInfo, std::vector<tag
 	tPer.iMaxkb = tPer.iMaxkb == 0 ? PERIODKBMAXB1 : tPer.iMaxkb;
 	tPer.iMinkb = tPer.iMinkb == 0 ? PERIODKBMINB1 : tPer.iMinkb;
 	m_pLog->logRecord("最大ka[%d] | 最小ka[%d] | 最大kb[%d] | 最小kb[%d]： \n", tPer.iMaxka, tPer.iMinka, tPer.iMaxkb, tPer.iMinkb);
-	/*logstream2 << "三级筛选开关" << endl;
-	logstream2 << "最大ka | 最小ka | 最大kb | 最小kb： " << tThdFilter.tLineNum.iMaxka << " " << tThdFilter.tLineNum.iMinka << "  "
-		<< tThdFilter.tLineNum.iMaxkb << " " << tThdFilter.tLineNum.iMinkb << endl;
-	logstream2 << "开关5 | 调整幅度: " << tThdFilter.bA5Switch << " " << static_cast<double>(tThdFilter.sCallbackRange / 100) << endl;
-*/
+
 	//循环处理每只股票
 	std::map<tagStockCodeInfo, std::vector<tagKline>>::const_iterator iter;
 	bool bRet = true;
 	for (iter = inMap.begin(); iter != inMap.end(); ++iter)
 	{
+		m_pLog->logRecord("\n");
 		m_pLog->logRecord("市场：[%d] 代码：[%s]\n", iter->first.market, iter->first.stockcode.c_str());
 		tagKline tLowA, tHighB1, tHighB2;
 		int nAPos = 0, nB1Pos = 0, nB2Pos = 0, nL2Pos = 0;  //A最低点位置

@@ -96,13 +96,14 @@ int main(int argc, char* argv)
 
 	std::map<tagStockCodeInfo, tagOutput>  output;
 
-	//select_entrance(input, output, eSinglePlatForm, 10, false);
+	alg_platform(input, output, eSinglePlatForm, 10, false);
+
 	TFirstFilter filter;
 	filter.sA3Switch = eAA;
 	filter.bA4Switch = true;
 	filter.bA5Switch = true;
 	filter.bA6Switch = true;
-	filter.sCallbackRange = 100;
+	filter.sCallbackRange = 90;
 	filter.sRbcoe = 10;
 	filter.tLineNum.iMaxka = 38;
 	filter.tLineNum.iMinka = 30;
