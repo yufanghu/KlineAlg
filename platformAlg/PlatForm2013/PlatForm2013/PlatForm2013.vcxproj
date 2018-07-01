@@ -80,20 +80,27 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="..\..\platformAlg\AlgBase.cpp" />
-    <ClCompile Include="..\..\platformAlg\CaculateAlg.cpp" />
+    <ClCompile Include="..\..\platformAlg\AlgPlatForm.cpp" />
+    <ClCompile Include="..\..\platformAlg\AlgStock1.cpp" />
+    <ClCompile Include="..\..\platformAlg\AlgStock2.cpp" />
+    <ClCompile Include="..\..\platformAlg\CaculatePlatform.cpp" />
     <ClCompile Include="..\..\platformAlg\Log.cpp" />
     <ClCompile Include="..\..\platformAlg\main.cpp" />
-    <ClCompile Include="..\..\platformAlg\PlatFormAlgorithm.cpp" />
-    <ClCompile Include="..\..\platformAlg\stock2.cpp" />
+    <ClCompile Include="..\..\platformAlg\StockAlgorithm.cpp" />
+    <ClCompile Include="..\..\platformAlg\CaculateStock2.cpp" />
     <ClCompile Include="..\..\platformAlg\Thread.cpp" />
     <ClCompile Include="..\..\platformAlg\ThreadPoolExecutor.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\platformAlg\AlgBase.h" />
-    <ClInclude Include="..\..\platformAlg\CaculateAlg.h" />
+    <ClInclude Include="..\..\platformAlg\AlgPlatForm.h" />
+    <ClInclude Include="..\..\platformAlg\AlgStock1.h" />
+    <ClInclude Include="..\..\platformAlg\AlgStock2.h" />
+    <ClInclude Include="..\..\platformAlg\CaculatePlatform.h" />
+    <ClInclude Include="..\..\platformAlg\Global.h" />
     <ClInclude Include="..\..\platformAlg\Log.h" />
-    <ClInclude Include="..\..\platformAlg\PlatFormAlgorithm.h" />
-    <ClInclude Include="..\..\platformAlg\stock2.h" />
+    <ClInclude Include="..\..\platformAlg\StockAlgorithm.h" />
+    <ClInclude Include="..\..\platformAlg\CaculateStock2.h" />
     <ClInclude Include="..\..\platformAlg\Thread.h" />
     <ClInclude Include="..\..\platformAlg\ThreadPoolExecutor.h" />
   </ItemGroup>

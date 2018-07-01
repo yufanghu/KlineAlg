@@ -3,7 +3,7 @@
 #include <iostream>
 #include <stdio.h>     
 #include <stdlib.h>   
-#include "PlatFormAlgorithm.h"
+#include "StockAlgorithm.h"
 #include "Log.h"
 
 
@@ -92,23 +92,23 @@ int main(int argc, char* argv)
 {
 
 	std::map<tagStockCodeInfo, std::vector<tagKline>>  input;
-	ReadKlineData("1526900149_0_log_data.txt", input);
+	ReadKlineData("D:\\data1.txt", input);
 
 	std::map<tagStockCodeInfo, tagOutput>  output;
 
 	alg_platform(input, output, eSinglePlatForm, 10, false);
 
 	TFirstFilter filter;
-	filter.sA3Switch = eAA;
+	filter.sA3Switch = eAB;
 	filter.bA4Switch = true;
 	filter.bA5Switch = true;
 	filter.bA6Switch = true;
 	filter.sCallbackRange = 90;
 	filter.sRbcoe = 10;
-	filter.tLineNum.iMaxka = 38;
-	filter.tLineNum.iMinka = 30;
-	filter.tLineNum.iMinkb = 30;
-	filter.tLineNum.iMaxkb = 40;
+	filter.tLineNum.iMaxka = 20;
+	filter.tLineNum.iMinka = 6;
+	filter.tLineNum.iMinkb = 1;
+	filter.tLineNum.iMaxkb = 8;
 	alg_stock2(input, output, filter);
 
 
