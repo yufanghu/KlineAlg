@@ -21,10 +21,12 @@ public:
 	void logRecord(/*string strFunc,int iLine, string strMod, */char* cFormat, ...);
 	void dataRecord(/*string strFunc,int iLine, string strMod, */char* cFormat, ...);
 	void clearLog();
+	static bool m_bEnableLog;
 private:
 	std::string m_logBuffer;
 	std::string m_dataBuffer;
 	std::string m_path;
+	
 };
 
 #endif

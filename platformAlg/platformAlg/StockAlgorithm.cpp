@@ -54,3 +54,8 @@ bool alg_stock1(const std::map<tagStockCodeInfo, std::vector<tagKline>>& inMap, 
 	delete pBase;
 	return true;
 }
+
+void EnableAlgLog(bool bEnable)
+{
+	CLog::m_bEnableLog = bEnable;
+}

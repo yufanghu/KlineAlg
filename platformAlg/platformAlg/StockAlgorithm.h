@@ -247,9 +247,8 @@ bool alg_platform(const std::map<tagStockCodeInfo, std::vector<tagKline>> & inpu
 /* 
 算法2
 @param inMap  输入参数  key-股票信息， value-k线集合
-@param output 输出参数  key-股票信息， value-存储股票类型 off   AA AB  AAP
-@param filter 输入参数  TFilter 用户选项默认均关闭
-@param eType  输入参数	EPlatFormType 筛选三个平台
+@param output 输出参数  key-股票信息， value-
+@param filter 输入参数  TFilter TFirstFilter一级筛选 TSecondFilter二级筛选 TThirdFilter三级筛选
 */
 /************************************************************************/
 bool  alg_stock2(const std::map<tagStockCodeInfo, std::vector<tagKline>> &inMap,
@@ -271,6 +270,16 @@ bool  alg_stock2(const std::map<tagStockCodeInfo, std::vector<tagKline>> &inMap,
 */
 /************************************************************************/
 bool alg_stock1(const std::map<tagStockCodeInfo, std::vector<tagKline>>& inMap, std::map<tagStockCodeInfo, outKline> & outMap);
+
+/************************************************************************/
+/*
+关闭/开启日志
+@param bEnable  输入参数  true-开启日志， false-关闭日志
+@param output 输出参数  key-股票信息， value-
+*/
+/************************************************************************/
+
+void EnableAlgLog(bool bEnable = true);
 
 #endif
 

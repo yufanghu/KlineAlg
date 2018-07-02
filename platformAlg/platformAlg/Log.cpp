@@ -2,6 +2,9 @@
 #include "log.h"
 
 using namespace std;
+
+bool CLog::m_bEnableLog = true;
+#define CHECK_LOG_ENABLE if(!m_bEnableLog) return;
 void stamp_to_standard(time_t stampTime, char* s, char* format = NULL)
 {
 	time_t tick = (time_t)stampTime;
@@ -26,16 +29,18 @@ CLog::~CLog()
 }
 
 void CLog::Init(const std::string & path){
+	CHECK_LOG_ENABLE
 	m_logBuffer = "";
 	m_dataBuffer = "";
 	m_path = path;
-
+	
 	system(("mkdir " + m_path).c_str());
 }
 
 
 void  CLog::Flush(){
 	{
+		CHECK_LOG_ENABLE
 		static int j = 0;
 		char buf[20] = { 0 };
 		stamp_to_standard(time(NULL), buf, "%Y_%m_%d_%H_%M_%S");
@@ -66,6 +71,7 @@ void  CLog::Flush(){
 
 void  CLog::logRecord(/*string strFunc,int iLine, string strMod, */char* cFormat, ...)
 {
+	CHECK_LOG_ENABLE
 	char  acBuffer[1024];
 	va_list args;
 	va_start(args, cFormat);
@@ -80,6 +86,7 @@ void  CLog::logRecord(/*string strFunc,int iLine, string strMod, */char* cFormat
 
 void  CLog::dataRecord(/*string strFunc,int iLine, string strMod, */char* cFormat, ...)
 {
+	CHECK_LOG_ENABLE
 	char acBuffer[1024];
 
 	va_list args;
@@ -94,6 +101,7 @@ void  CLog::dataRecord(/*string strFunc,int iLine, string strMod, */char* cForma
 
 void CLog::clearLog()
 {
+	CHECK_LOG_ENABLE
 	m_dataBuffer = "";
 	m_logBuffer = "";
 }
