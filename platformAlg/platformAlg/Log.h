@@ -11,7 +11,9 @@
 #include <fstream>
 #include <stdarg.h>
 #include <time.h>
-
+namespace AlgorithmLog{
+	const std::string LOG_FOLDER = "Algorithm_Log\\";
+}
 class CLog{
 public:
 	CLog();
@@ -26,7 +28,6 @@ private:
 	std::string m_logBuffer;
 	std::string m_dataBuffer;
 	std::string m_path;
-	
 };
 
 #endif

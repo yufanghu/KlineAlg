@@ -15,12 +15,6 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\platformAlg\CaculateAlg.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\platformAlg\PlatFormAlgorithm.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\platformAlg\stdafx.h">
       <Filter>头文件</Filter>
     </ClInclude>
@@ -36,15 +30,33 @@
     <ClInclude Include="..\..\platformAlg\ThreadPoolExecutor.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\platformAlg\AlgBase.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\platformAlg\AlgPlatForm.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\platformAlg\AlgStock1.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\platformAlg\AlgStock2.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\platformAlg\CaculatePlatform.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\platformAlg\CaculateStock2.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\platformAlg\Global.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\platformAlg\StockAlgorithm.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\platformAlg\CaculateAlg.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\platformAlg\main.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\platformAlg\PlatFormAlgorithm.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="..\..\platformAlg\stdafx.cpp">
@@ -57,6 +69,27 @@
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="..\..\platformAlg\ThreadPoolExecutor.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\platformAlg\AlgBase.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\platformAlg\AlgPlatForm.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\platformAlg\AlgStock1.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\platformAlg\AlgStock2.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\platformAlg\CaculatePlatform.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\platformAlg\CaculateStock2.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\platformAlg\StockAlgorithm.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>

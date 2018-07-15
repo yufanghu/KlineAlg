@@ -6,7 +6,7 @@
 **************************************/
 #include "StockAlgorithm.h"
 #include "AlgBase.h"
-
+#include "Log.h"
 
 
 class CCaculateAlg 

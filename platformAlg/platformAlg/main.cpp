@@ -108,11 +108,22 @@ int main(int argc, char* argv)
 	filter.tLineNum.iMaxka = 20;
 	filter.tLineNum.iMinka = 6;
 	filter.tLineNum.iMinkb = 1;
-	filter.tLineNum.iMaxkb = 8;
+	filter.tLineNum.iMaxkb = 12;
+
 	alg_stock2(input, output, filter);
 
+	TThirdFilter second;
+	second.tLineNum.iMaxka = 20;
+	second.tLineNum.iMinka = 6;
+	second.tLineNum.iMinkb = 1;
+	second.tLineNum.iMaxkb = 12;
+	second.sCallbackRange = 80;
+	second.bA5Switch = false;
+
+	alg_stock2(input, output, second);
 
 
-	//system("pause");
+
+	system("pause");
 	return 0;
 }

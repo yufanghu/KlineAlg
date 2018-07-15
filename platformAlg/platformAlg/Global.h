@@ -9,17 +9,17 @@
 static void stamp_to_standard(time_t stampTime, char* s, char* format = NULL)
 {
 	time_t tick = (time_t)stampTime;
-	struct tm tm;
+	struct tm tm_;
 
-	tm = *localtime(&tick);
+	localtime_s(&tm_, &tick);
 	int size = strlen(s) > 32 ? strlen(s) : 32;
 	if (format == NULL)
 	{
-		strftime(s, size, "%Y-%m-%d", &tm);
+		strftime(s, size, "%Y-%m-%d", &tm_);
 	}
 	else
 	{
-		strftime(s, size, format, &tm);
+		strftime(s, size, format, &tm_);
 	}
 }
 

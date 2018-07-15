@@ -3,7 +3,7 @@
 
 
 #include "StockAlgorithm.h"
-
+#include "Log.h"
 class CCaculateSotck2
 {
 public:
@@ -51,6 +51,10 @@ private:
 
 	void PrintData(const std::vector<tagKline>& kLineData);
 	void PrintHead(const tagStockCodeInfo & codeInfo, int nPos);
+
+	void PrintInputParam(Alg2Filter * filter, int type);
+
+
 
 private:
 	CLog * m_pLog;

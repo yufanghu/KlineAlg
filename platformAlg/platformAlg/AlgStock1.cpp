@@ -1,3 +1,4 @@
+#include "StdAfx.h"
 #include "AlgStock1.h"
 #include "Log.h"
 #include "CaculateStock2.h"

@@ -4,7 +4,7 @@
 #include "CaculateStock2.h"
 #include "StockAlgorithm.h"
 #include "Global.h"
-
+#include "Log.h"
 
 //计算最高或者最低收盘价
 bool CCaculateSotck2::GetLowOrHighClose(const std::vector<tagKline>& itvDataBegin, int start, int end,
@@ -100,6 +100,48 @@ bool CCaculateSotck2::GetLow(std::vector<tagKline>::const_iterator itvDataBegin,
 }
 
 
+ void CCaculateSotck2::PrintInputParam(Alg2Filter * filter, int type)
+ {
+	auto func = [](bool bRet){
+		return bRet ? "打开" : "关闭" ;
+	};
+		
+	const static char* temp[] = {
+		"OFF",
+		"AA",
+		"AB"
+	};
+
+	char buf[1024] = {0};
+	if(type == 0){
+		TFirstFilter * pFilter = dynamic_cast<TFirstFilter*>(filter);
+		if(pFilter){
+				sprintf_s(buf, sizeof(buf), "一级筛选参数：KA[%d~%d],KB[%d~%d],A3双底类型[%s],A4步骤[%s],A5步骤[%s],A6步骤[%s],双底调整幅度[%d],阳K比例[%d]\n", 
+					pFilter->tLineNum.iMinka, pFilter->tLineNum.iMaxka, pFilter->tLineNum.iMinkb, pFilter->tLineNum.iMaxkb, 
+				temp[pFilter->sA3Switch], 
+				func(pFilter->bA4Switch),func(pFilter->bA5Switch),func(pFilter->bA6Switch),
+				pFilter->sCallbackRange,pFilter->sRbcoe);
+		}
+	}
+	else if(type == 1){
+		TSecondFilter * pFilter = dynamic_cast<TSecondFilter*>(filter);
+		if(pFilter){
+				sprintf_s(buf, sizeof(buf), "二级筛选参数：KA[%d~%d],KB[%d~%d],A5步骤[%s],双底调整幅度[%d]\n",
+					pFilter->tLineNum.iMinka, pFilter->tLineNum.iMaxka, pFilter->tLineNum.iMinkb, pFilter->tLineNum.iMaxkb, 
+				func(pFilter->bA5Switch), pFilter->sCallbackRange);
+		}
+	}
+	else if(type == 2){
+		TThirdFilter * pFilter = dynamic_cast<TThirdFilter*>(filter);
+		if(pFilter){
+				sprintf_s(buf, sizeof(buf), "三级筛选参数：KA[%d~%d],KB[%d~%d],A5步骤[%s],双底调整幅度[%d]\n", 
+					pFilter->tLineNum.iMinka, pFilter->tLineNum.iMaxka, pFilter->tLineNum.iMinkb, pFilter->tLineNum.iMaxkb, 
+				func(pFilter->bA5Switch), pFilter->sCallbackRange);
+		}
+	}
+	m_pLog->logRecord(buf);
+}
+
 
 void CCaculateSotck2::PrintData(const std::vector<tagKline>& kLineData)
 {
@@ -125,7 +167,7 @@ bool CCaculateSotck2::filterStepA1(const std::vector<tagKline>& vecKline, tagKli
 	//k线小于等于2，不处理
 	if (vecKline.size() <= 2)
 	{
-		m_pLog->logRecord("k线小于2\n");
+		m_pLog->logRecord("筛选1 k线小于2\n");
 		return false;
 	}
 	tagKline tAPos;
@@ -134,24 +176,24 @@ bool CCaculateSotck2::filterStepA1(const std::vector<tagKline>& vecKline, tagKli
 	bRet = GetLowOrHighClose(vecKline, 0, vecKline.size(), tAPos, nAPos, true);
 	if (nAPos == 0)
 	{
-		m_pLog->logRecord("A为第一根K线,没有B1，失败\n");
+		m_pLog->logRecord("筛选1 A为第一根K线,没有B1，失败\n");
 		return false;
 	}
 	else if (nAPos == vecKline.size() - 1)
 	{
-		m_pLog->logRecord("A为最后一根K线，没有B2，失败\n");
+		m_pLog->logRecord("筛选1 A为最后一根K线，没有B2，失败\n");
 		return false;
 	}
 	
 	if (!bRet)
 	{
-		m_pLog->logRecord("未找到A\n");
+		m_pLog->logRecord("筛选1 未找到A\n");
 		return false;
 	}
 
 
 	stamp_to_standard(tAPos.time, buf);
-	m_pLog->logRecord("筛选A收盘最低数据：pos:%d %s open %f high %f low %f close %f \n",nAPos, buf, tAPos.open, tAPos.high, tAPos.low, tAPos.close);
+	m_pLog->logRecord("筛选1 A收盘最低数据：pos:%d %s open %f high %f low %f close %f \n",nAPos, buf, tAPos.open, tAPos.high, tAPos.low, tAPos.close);
 
 
 	//搜索A数据日期前收盘价最高B1数据
@@ -159,11 +201,11 @@ bool CCaculateSotck2::filterStepA1(const std::vector<tagKline>& vecKline, tagKli
 	bRet = GetLowOrHighClose(vecKline, 0, nAPos - 1, tB1Pos,nB1Pos, false);
 	if (!bRet)
 	{
-		m_pLog->logRecord("筛选未找到最高收盘价B1\n");
+		m_pLog->logRecord("筛选1 筛选未找到最高收盘价B1\n");
 		return false;
 	}
 	stamp_to_standard(tB1Pos.time, buf);
-	m_pLog->logRecord("筛选B1收盘最高数据：pos:%d %s open %f high %f low %f close %f \n",nB1Pos, buf, tB1Pos.open, tB1Pos.high, tB1Pos.low, tB1Pos.close);
+	m_pLog->logRecord("筛选1 B1收盘最高数据：pos:%d %s open %f high %f low %f close %f \n",nB1Pos, buf, tB1Pos.open, tB1Pos.high, tB1Pos.low, tB1Pos.close);
 
 	
 
@@ -172,11 +214,12 @@ bool CCaculateSotck2::filterStepA1(const std::vector<tagKline>& vecKline, tagKli
 	bRet = GetLowOrHighClose(vecKline, nAPos + 1, vecKline.size(), tB2Pos, nB2Pos, false);
 	if (!bRet)
 	{
-		m_pLog->logRecord("筛选未找到最高收盘价B2\n");
+		m_pLog->logRecord("筛选1 筛选未找到最高收盘价B2\n");
 		return false;
 	}
 	stamp_to_standard(tB2Pos.time, buf);
-	m_pLog->logRecord("筛选B2收盘最高数据：pos:%d %s open %f high %f low %f close %f \n", nB2Pos,buf, tB2Pos.open, tB2Pos.high, tB2Pos.low, tB2Pos.close);
+	m_pLog->logRecord("筛选1 B2收盘最高数据：pos:%d %s open %f high %f low %f close %f \n", nB2Pos,buf, tB2Pos.open, tB2Pos.high, tB2Pos.low, tB2Pos.close);
+	m_pLog->logRecord("筛选1 成功");
 	return true;
 }
 
@@ -196,18 +239,19 @@ bool CCaculateSotck2::filterStepA2(const std::vector<tagKline>& vecKline, TA2 pe
 	int nAPeriod = nB2Pos - nAPos + 1;
 	if ( nAPeriod < period.iMinka || nAPeriod > period.iMaxka)
 	{
-		m_pLog->logRecord("A-B2 K线数[%d] 不在范围[%d]-[%d]\n", nAPeriod, period.iMinka, period.iMaxka);
+		m_pLog->logRecord("筛选2 A-B2 K线数[%d] 不在范围[%d]-[%d]\n", nAPeriod, period.iMinka, period.iMaxka);
 		return false;
 	}
-	m_pLog->logRecord("A-B2 K线数[%d] 满足[%d]-[%d]\n", nAPeriod, period.iMinka, period.iMaxka);
+	m_pLog->logRecord("筛选2 A-B2 K线数[%d] 满足[%d]-[%d]\n", nAPeriod, period.iMinka, period.iMaxka);
 	//条件B、筛选出数据B2（包含该数据）到数据末期，k线根数符合周期系数KB(6-8默认）范围内
 	int nBPeriod = vecKline.size() - nB2Pos + 1;
 	if (nBPeriod < period.iMinkb || nBPeriod > period.iMaxkb)
 	{
-		m_pLog->logRecord("末尾-B2 K线数[%d] 不在范围[%d]-[%d]\n", nBPeriod, period.iMinkb, period.iMaxkb);
+		m_pLog->logRecord("筛选2 末尾-B2 K线数[%d] 不在范围[%d]-[%d]\n", nBPeriod, period.iMinkb, period.iMaxkb);
 		return false;
 	}
-	m_pLog->logRecord("末尾-B2 K线数[%d] 满足[%d]-[%d]\n", nBPeriod, period.iMinkb, period.iMaxkb);
+	m_pLog->logRecord("筛选2 末尾-B2 K线数[%d] 满足[%d]-[%d]\n", nBPeriod, period.iMinkb, period.iMaxkb);
+	m_pLog->logRecord("筛选2 成功\n");
 	return true;
 }
 
@@ -229,7 +273,7 @@ bool CCaculateSotck2::filterStepA3(const std::vector<tagKline>& vecKline, TFirst
 			iDoubleType = eAA;
 			if( iDoubleType != tFirFilter.sA3Switch)
 			{
-				m_pLog->logRecord("当前类型:[%d] 和开关类型不同 [%d]\n", iDoubleType, tFirFilter.sA3Switch);
+				m_pLog->logRecord("筛选3 当前类型:[%d] 和开关类型不同 [%d]\n", iDoubleType, tFirFilter.sA3Switch);
 				return false;
 			}
 			m_pLog->logRecord("筛选3 AA型\n");
@@ -240,14 +284,14 @@ bool CCaculateSotck2::filterStepA3(const std::vector<tagKline>& vecKline, TFirst
 			iDoubleType = eAB;
 			if( iDoubleType != tFirFilter.sA3Switch)
 			{
-				const static std::map<int, std::string> temp = {
-					{0, "关闭"},
-					{1, "AA"},
-					{2, "AB"},
-					{3, "AAP"}
+				const static std::string temp[4] = {
+					"关闭",
+					"AA",
+					"AB",
+					"AAP"
 				};
 				
-				m_pLog->logRecord("当前类型:[%s] 和开关类型不同 [%s]\n", temp.at(iDoubleType).c_str(), temp.at(tFirFilter.sA3Switch).c_str());
+				m_pLog->logRecord("筛选3 当前类型:[%s] 和开关类型不同 [%s]\n", temp[iDoubleType].c_str(), temp[tFirFilter.sA3Switch].c_str());
 				return false;
 			}
 			m_pLog->logRecord("筛选3 AB型\n");
@@ -280,7 +324,7 @@ bool CCaculateSotck2::filterStepA4(const std::vector<tagKline>& vecKline, TFirst
 	bool bRet = GetLowOrHighClose(vecKline, nB2Pos, vecKline.size(), tL2Pos, nL2Pos, true);
 	if ( nL2Pos == nB2Pos)
 	{
-		m_pLog->logRecord("筛选4失败 L2为B2\n");
+		m_pLog->logRecord("筛选4 失败 L2为B2\n");
 		return false;
 	}
 	if (!bRet)
@@ -296,7 +340,7 @@ bool CCaculateSotck2::filterStepA4(const std::vector<tagKline>& vecKline, TFirst
 	}
 	else
 	{
-		m_pLog->logRecord("筛选A4 不满足L2[%f]>B1[%f]\n", tL2Pos.close, vecKline[nB1Pos].close);
+		m_pLog->logRecord("筛选4 不满足L2[%f]>B1[%f]\n", tL2Pos.close, vecKline[nB1Pos].close);
 		return false;
 	}
 
@@ -317,7 +361,7 @@ bool CCaculateSotck2::filterStepA5(const std::vector<tagKline>& vecKline, TFirst
 	bool bRet = GetLow(vecKline.begin()+nB2Pos + 1, vecKline.end(), tEndData);
 	if (!bRet)
 	{
-		m_pLog->logRecord("筛选A5失败,未找到最低价\n");
+		m_pLog->logRecord("筛选5 失败,未找到最低价\n");
 		return false;
 	}
 
@@ -326,19 +370,19 @@ bool CCaculateSotck2::filterStepA5(const std::vector<tagKline>& vecKline, TFirst
 
 	if ((h1 == 0))
 	{
-		m_pLog->logRecord("筛选A5失败,h1 is 0\n");
+		m_pLog->logRecord("筛选5 失败,h1 is 0\n");
 		return false;
 
 	}
 	double ht = h2 / h1;
 	if (ht > (float)tFirFilter.sCallbackRange / 100)
 	{
-		m_pLog->logRecord("筛选A5失败,ht[%f]不满足 > sCallBackRange [%f]\n", ht, (float)tFirFilter.sCallbackRange / 100);
+		m_pLog->logRecord("筛选5 失败,ht[%f]不满足 > sCallBackRange [%f]\n", ht, (float)tFirFilter.sCallbackRange / 100);
 		return false;
 	}
 
 
-	m_pLog->logRecord("筛选A5成功,满足ht[%f] <=callbackRange :[%f]\n", ht, (float)tFirFilter.sCallbackRange / 100);
+	m_pLog->logRecord("筛选5 成功 满足ht[%f] <=callbackRange[%f]\n", ht, (float)tFirFilter.sCallbackRange / 100);
 	return true;
 
 
@@ -358,16 +402,16 @@ bool CCaculateSotck2::filterStepA6(const std::vector<tagKline>& vecKline, TFirst
 	
 	if (iSunlineNum == 0)
 	{
-		m_pLog->logRecord("筛选6未找到阳线\n");
+		m_pLog->logRecord("筛选6 未找到阳线\n");
 		return false;
 	}
 	iDisFromAToEnd = vecKline.size()- nAPos ;
 	if (iDisFromAToEnd <= 0)
 	{
-		m_pLog->logRecord("筛选6A数据到数据末尾K线根数不足\n");
+		m_pLog->logRecord("筛选6 A数据到数据末尾K线根数不足\n");
 		return false;
 	}
-	m_pLog->logRecord("阳线数:[%d] A数据到数据末尾K线根数[%d]\n ", iSunlineNum, iDisFromAToEnd);
+	m_pLog->logRecord("筛选6 阳线数:[%d] A数据到数据末尾K线根数[%d]\n", iSunlineNum, iDisFromAToEnd);
 	
 	rb = (float)iSunlineNum / iDisFromAToEnd;
 	
@@ -375,11 +419,11 @@ bool CCaculateSotck2::filterStepA6(const std::vector<tagKline>& vecKline, TFirst
 	//todo: 筛选条件 大于等于命中
 	if (rb < (float)tFirFilter.sRbcoe / 100)
 	{
-		m_pLog->logRecord("筛选6失败： rb[%f] < 输入  rb\n", rb);
+		m_pLog->logRecord("筛选6 失败： rb[%f] < 输入  rb\n", rb);
 		return false;
 	}
 	
-	m_pLog->logRecord("筛选6成功 rb:[%f] > sRbcore[%f]\n ", rb, (float)tFirFilter.sRbcoe / 100);
+	m_pLog->logRecord("筛选6 成功 rb:[%f] > sRbcore[%f]\n", rb, (float)tFirFilter.sRbcoe / 100);
 	return true;
 }
 
@@ -412,11 +456,10 @@ CCaculateSotck2::~CCaculateSotck2()
 
 }
 
+
 bool CCaculateSotck2::filter2Level1(const  std::map<tagStockCodeInfo, std::vector<tagKline>> &inMap,
 	std::map<tagStockCodeInfo, tagOutput> & output, TFirstFilter& tFirFilter)
 {
-
-
 	TA2 tPer = tFirFilter.tLineNum;
 	//周期系数KA 默认为6 - 9
 	//周期系数KB 默认为6-8
@@ -425,9 +468,7 @@ bool CCaculateSotck2::filter2Level1(const  std::map<tagStockCodeInfo, std::vecto
 	tPer.iMaxkb = tPer.iMaxkb == 0 ? PERIODKBMAX : tPer.iMaxkb;
 	tPer.iMinkb = tPer.iMinkb == 0 ? PERIODKBMIN : tPer.iMinkb;
 
-	m_pLog->logRecord("一级筛选\n");
-	m_pLog->logRecord("周期系数ka [%d]-[%d]| 周期系数kb [%d]-[%d] | 双底调整幅度[%d]\n", tPer.iMaxka, tPer.iMinka,
-		tPer.iMaxkb, tPer.iMinkb,tFirFilter.sCallbackRange);
+	PrintInputParam(&tFirFilter, 0);
 
 	std::map<tagStockCodeInfo, std::vector<tagKline>>::const_iterator iter;
 	bool bRet = true;
@@ -537,9 +578,7 @@ bool CCaculateSotck2::filter2Level1(const  std::map<tagStockCodeInfo, std::vecto
 bool CCaculateSotck2::filter2Level2(const std::map<tagStockCodeInfo, std::vector<tagKline>> &inMap,
 	std::map<tagStockCodeInfo, tagOutput> & output, TSecondFilter& tSedFilter)
 {
-
-
-	m_pLog->logRecord("二级筛选\n");
+	PrintInputParam(&tSedFilter, 1);
 	TA2 tPer = tSedFilter.tLineNum;
 	//周期系数KA 默认为6 - 9
 	//周期系数KB 默认为6-8
@@ -547,8 +586,6 @@ bool CCaculateSotck2::filter2Level2(const std::map<tagStockCodeInfo, std::vector
 	tPer.iMinka = tPer.iMinka == 0 ? PERIODKAMINB1 : tPer.iMinka;
 	tPer.iMaxkb = tPer.iMaxkb == 0 ? PERIODKBMAXB1 : tPer.iMaxkb;
 	tPer.iMinkb = tPer.iMinkb == 0 ? PERIODKBMINB1 : tPer.iMinkb;
-	m_pLog->logRecord("最大ka[%d] | 最小ka[%d] | 最大kb[%d] | 最小kb[%d]： \n", tPer.iMaxka, tPer.iMinka, tPer.iMaxkb, tPer.iMinkb); 
-
 
 	//循环处理每只股票
 	std::map<tagStockCodeInfo, std::vector<tagKline>>::const_iterator iter;
@@ -613,7 +650,7 @@ bool CCaculateSotck2::filter2Level2(const std::map<tagStockCodeInfo, std::vector
 bool CCaculateSotck2::filter2Level3(const std::map<tagStockCodeInfo, std::vector<tagKline>> &inMap,
 	std::map<tagStockCodeInfo, tagOutput> & output, TThirdFilter& tThdFilter)
 {
-	m_pLog->logRecord("三级筛选\n");
+	PrintInputParam(&tThdFilter, 2);
 	TA2 tPer = tThdFilter.tLineNum;
 	//周期系数KA 默认为6 - 9
 	//周期系数KB 默认为6-8
@@ -621,7 +658,6 @@ bool CCaculateSotck2::filter2Level3(const std::map<tagStockCodeInfo, std::vector
 	tPer.iMinka = tPer.iMinka == 0 ? PERIODKAMINB1 : tPer.iMinka;
 	tPer.iMaxkb = tPer.iMaxkb == 0 ? PERIODKBMAXB1 : tPer.iMaxkb;
 	tPer.iMinkb = tPer.iMinkb == 0 ? PERIODKBMINB1 : tPer.iMinkb;
-	m_pLog->logRecord("最大ka[%d] | 最小ka[%d] | 最大kb[%d] | 最小kb[%d]： \n", tPer.iMaxka, tPer.iMinka, tPer.iMaxkb, tPer.iMinkb);
 
 	//循环处理每只股票
 	std::map<tagStockCodeInfo, std::vector<tagKline>>::const_iterator iter;

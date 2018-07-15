@@ -1,3 +1,4 @@
+#include "StdAfx.h"
 #include "AlgPlatForm.h"
 #include "CaculatePlatform.h"
 #include "StockAlgorithm.h"
@@ -29,7 +30,6 @@ bool CAlgPlatForm::createNewAlg()
 	
 	bool bRet = false;
 
-
 	//遍历map开始筛选
 	switch (m_platformType)
 	{
@@ -43,14 +43,20 @@ bool CAlgPlatForm::createNewAlg()
 			break;
 	}
 
-
+	log.logRecord("\n筛选结果=====================");
 	if (m_output.empty())
 		log.logRecord("没有找到匹配股票\n");
 	else{
-		log.logRecord("筛选成功:");
+		log.logRecord("筛选成功[%d]支股票:\n", m_output.size());
+		int i = 0;
 		for each (auto var in m_output)
 		{
-			log.logRecord("[%d-%s],", var.first.market, var.first.stockcode.c_str());
+			if(i % 4 == 0 && i != 0){
+				log.logRecord("\n");
+			}
+			log.logRecord("[%d-%s], ", var.first.market, var.first.stockcode.c_str());
+		
+			i++;
 		}
 		log.logRecord("\n");
 	}

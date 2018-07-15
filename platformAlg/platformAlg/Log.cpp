@@ -1,26 +1,12 @@
 #include "StdAfx.h"
 #include "log.h"
+#include "Global.h"
 
 using namespace std;
 
 bool CLog::m_bEnableLog = true;
 #define CHECK_LOG_ENABLE if(!m_bEnableLog) return;
-void stamp_to_standard(time_t stampTime, char* s, char* format = NULL)
-{
-	time_t tick = (time_t)stampTime;
-	struct tm tm;
 
-	tm = *localtime(&tick);
-	int size = strlen(s) > 32 ? strlen(s) : 32;
-	if (format == NULL)
-	{
-		strftime(s, size, "%Y-%m-%d", &tm);
-	}
-	else
-	{
-		strftime(s, size, format, &tm);
-	}
-}
 CLog::CLog()
 {}
 
@@ -32,22 +18,22 @@ void CLog::Init(const std::string & path){
 	CHECK_LOG_ENABLE
 	m_logBuffer = "";
 	m_dataBuffer = "";
-	m_path = path;
+	m_path = AlgorithmLog::LOG_FOLDER + path;
 	
 	system(("mkdir " + m_path).c_str());
 }
 
 
 void  CLog::Flush(){
+
+	char buf_time[20] = { 0 };
+	static int j = 0;
+	stamp_to_standard(time(NULL), buf_time, "%Y_%m_%d_%H_%M_%S");
 	{
 		CHECK_LOG_ENABLE
-		static int j = 0;
-		char buf[20] = { 0 };
-		stamp_to_standard(time(NULL), buf, "%Y_%m_%d_%H_%M_%S");
-
 		char name[256] = { 0 };
 
-		sprintf(name, "%s/%s_%d_log.txt", m_path.c_str(), buf, j++);
+		sprintf_s(name, "%s/%s_%d_log.txt", m_path.c_str(), buf_time, j++);
 
 		FILE * pFile = fopen(name, "a");
 		if (pFile){
@@ -57,9 +43,8 @@ void  CLog::Flush(){
 		}
 	}
 	{
-	static int i = 0;
 	char buf[256] = { 0 };
-	sprintf(buf, "%s/%lld_%d_log_data.txt", m_path.c_str(), time(NULL), i++);
+	sprintf(buf, "%s/%s_%d_data.txt", m_path.c_str(), buf_time, j-1);
 	FILE * pFile = fopen(buf, "a");
 	if (pFile){
 		fwrite(m_dataBuffer.c_str(), m_dataBuffer.length(), 1, pFile);

@@ -4,28 +4,12 @@
 作者		:Jarvis
 创建日期	:2018-04-29
 修改日期	:2018-05-01
-描述		: K线【单/双】平台算法
+描述		: K线筛选算法接口文件
 **************************************/
 
 #include <vector>
 #include <map>
 #include <string>
-#include "Log.h"
-
-
-#define PERIODKAMIN     6
-#define PERIODKAMINB1   2
-#define PERIODKAMINC2   2
-#define PERIODKAMAX     9
-#define PERIODKAMAXB1   8
-#define PERIODKAMAXC1   8
-#define PERIODKBMIN     6
-#define PERIODKBMINB1   5
-#define PERIODKBMINC1   5
-#define PERIODKBMAX     8
-#define PERIODKBMAXB1   8
-#define PERIODKBMAXC1   8
-
 
 namespace alg{
 
@@ -177,42 +161,81 @@ namespace alg{
 		short iMinkb;  //最小KB
 		short iMaxkb;  //最大KB
 
-		TA2():iMaxkb(0),iMaxka(0), iMinkb(0), iMinka(0){};
+		TA2()
+			:iMaxkb(0),
+			iMaxka(0),
+			iMinkb(0),
+			iMinka(0)
+		{
+
+		};
 	};
 
-
-	//一级筛选
-	struct TFirstFilter
+	struct Alg2Filter{
+		Alg2Filter(){}
+		virtual ~Alg2Filter(){}
+	};
+	//筛选参数
+	struct TFirstFilter : public Alg2Filter
 	{
-		TA2   tLineNum;
-		short  sA3Switch;       //A3步骤参数   0 -> off  1 -> AA   2 -> AB
-		bool  bA4Switch;        // A4步骤开关 
-		bool  bA5Switch;        // A5步骤开关
-		short sCallbackRange;   //双底调整幅度  整数形式：1-99  
-		bool  bA6Switch;        // A6步骤开关	
-		short sRbcoe;           //阳k线比例  整数形式：1-99
-		TFirstFilter() :sA3Switch(0), bA4Switch(false), bA5Switch(false), 
-			sCallbackRange(1), bA6Switch(false), sRbcoe(1){};
+		TA2		tLineNum;
+		short	sA3Switch;        //A3步骤参数   0 -> off  1 -> AA   2 -> AB
+		bool	bA4Switch;        //A4步骤开关 
+		bool	bA5Switch;        //A5步骤开关
+		bool	bA6Switch;        //A6步骤开关	
+		short	sCallbackRange;   //双底调整幅度  整数形式：1-99  
+		short	sRbcoe;           //阳k线比例  整数形式：1-99
+		TFirstFilter() 
+			:sA3Switch(0), 
+			bA4Switch(false), 
+			bA5Switch(false), 
+			sCallbackRange(1),
+			bA6Switch(false),
+			sRbcoe(1)
+		{
+		};
 	};
 
 	//二级筛选
-	struct TSecondFilter
+	struct TSecondFilter  : public Alg2Filter
 	{
-		TA2   tLineNum;
+		TA2    tLineNum;
 		bool   bA5Switch;
-		short sCallbackRange;//双底调整幅度  整数形式：1-99
-		TSecondFilter() :bA5Switch(false), sCallbackRange(1){};
+		short  sCallbackRange;//双底调整幅度  整数形式：1-99
+		TSecondFilter() 
+			:bA5Switch(false), 
+			sCallbackRange(1)
+		{
+		};
 	};
 
 
 	//三级筛选
-	struct TThirdFilter
+	struct TThirdFilter  : public Alg2Filter
 	{
 		TA2   tLineNum;
 		bool   bA5Switch;
 		short sCallbackRange;//双底调整幅度  整数形式：1-99
-		TThirdFilter() :bA5Switch(false), sCallbackRange(1){};
+		TThirdFilter() 
+			:bA5Switch(false), 
+			sCallbackRange(1)
+		{
+		};
 	};
+
+	//算法二的部分最小最大默认边界（用户不传的情况）
+	#define PERIODKAMIN     6
+	#define PERIODKAMINB1   2
+	#define PERIODKAMINC2   2
+	#define PERIODKAMAX     9
+	#define PERIODKAMAXB1   8
+	#define PERIODKAMAXC1   8
+	#define PERIODKBMIN     6
+	#define PERIODKBMINB1   5
+	#define PERIODKBMINC1   5
+	#define PERIODKBMAX     8
+	#define PERIODKBMAXB1   8
+	#define PERIODKBMAXC1   8
 
 #pragma endregion 算法二
 
@@ -275,7 +298,6 @@ bool alg_stock1(const std::map<tagStockCodeInfo, std::vector<tagKline>>& inMap, 
 /*
 关闭/开启日志
 @param bEnable  输入参数  true-开启日志， false-关闭日志
-@param output 输出参数  key-股票信息， value-
 */
 /************************************************************************/
 

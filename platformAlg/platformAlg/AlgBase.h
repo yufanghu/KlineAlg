@@ -12,7 +12,7 @@ public:
 	virtual ~CAlgBase();
 
 	virtual bool createNewAlg() = 0;
-
+	
 	/*virtual bool LicenseCheck();*/
 };
 
