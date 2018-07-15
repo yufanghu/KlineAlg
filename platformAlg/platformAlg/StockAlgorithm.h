@@ -223,19 +223,6 @@ namespace alg{
 		};
 	};
 
-	//算法二的部分最小最大默认边界（用户不传的情况）
-	#define PERIODKAMIN     6
-	#define PERIODKAMINB1   2
-	#define PERIODKAMINC2   2
-	#define PERIODKAMAX     9
-	#define PERIODKAMAXB1   8
-	#define PERIODKAMAXC1   8
-	#define PERIODKBMIN     6
-	#define PERIODKBMINB1   5
-	#define PERIODKBMINC1   5
-	#define PERIODKBMAX     8
-	#define PERIODKBMAXB1   8
-	#define PERIODKBMAXC1   8
 
 #pragma endregion 算法二
 
