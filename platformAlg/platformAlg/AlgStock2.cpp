@@ -3,6 +3,8 @@
 #include "Log.h"
 #include "CaculateStock2.h"
 #include "Global.h"
+#include <time.h>
+
 CAlgStock2::~CAlgStock2()
 {
 
@@ -14,8 +16,16 @@ bool CAlgStock2::createNewAlg()
 {
 	CLog log;
 	char buf[20] = { 0 };
-	sprintf_s(buf, sizeof(buf), "%lld", time(NULL));
+	static int temp = 0;
 
+	static char* tempString[]  = {
+		"Level1",
+		"Level2",
+		"Level3"
+	};
+
+	sprintf_s(buf, sizeof(buf), "%lld_%d_%s", time(NULL),  ++temp, tempString[m_id-1]);
+	
 	log.Init("Stock2_Log\\" + std::string(buf));
 
 	CCaculateSotck2 calAlg;

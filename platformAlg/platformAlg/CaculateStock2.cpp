@@ -628,14 +628,14 @@ bool CCaculateSotck2::filter2Level2(const std::map<tagStockCodeInfo, std::vector
 		bRet = filterStepA1(vecKline, tLowA, nAPos, tHighB1, nB1Pos, tHighB2, nB2Pos);
 		if (!bRet)
 		{
-			m_pLog->logRecord("¶þ²ãA1Ê§°Ü\n");
+			m_pLog->logRecord("É¸Ñ¡µÚ1²½Ê§°Ü\n");
 			continue;
 		}
 
 		bRet = filterStepA2(vecKline, tPer, nAPos, nB2Pos);
 		if (!bRet)
 		{
-			m_pLog->logRecord("¶þ²ãA2Ê§°Ü\n");
+			m_pLog->logRecord("É¸Ñ¡µÚ2²½Ê§°Ü\n");
 			continue;
 		}
 		if (tSedFilter.bA5Switch == false)
@@ -701,14 +701,14 @@ bool CCaculateSotck2::filter2Level3(const std::map<tagStockCodeInfo, std::vector
 		bRet = filterStepA1(vecKline, tLowA, nAPos, tHighB1, nB1Pos, tHighB2, nB2Pos);
 		if (!bRet)
 		{
-			m_pLog->logRecord("¶þ²ãA1Ê§°Ü\n");
+			m_pLog->logRecord("É¸Ñ¡µÚ1²½Ê§°Ü\n");
 			continue;
 		}
 
 		bRet = filterStepA2(vecKline, tPer, nAPos, nB2Pos);
 		if (!bRet)
 		{
-			m_pLog->logRecord("¶þ²ãA2Ê§°Ü\n");
+			m_pLog->logRecord("É¸Ñ¡µÚ2²½Ê§°Ü\n");
 			continue;
 		}
 		if (tThdFilter.bA5Switch == false)
