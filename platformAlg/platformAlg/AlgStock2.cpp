@@ -15,7 +15,7 @@ CAlgStock2::~CAlgStock2()
 bool CAlgStock2::createNewAlg()
 {
 	CLog log;
-	char buf[20] = { 0 };
+	char buf[100] = { 0 };
 	static int temp = 0;
 
 	static char* tempString[]  = {

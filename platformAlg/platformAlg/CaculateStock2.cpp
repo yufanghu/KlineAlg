@@ -438,7 +438,7 @@ bool CCaculateSotck2::filterStepA6(const std::vector<tagKline>& vecKline, TFirst
 		return false;
 	}
 	
-	m_pLog->logRecord("筛选6 成功 rb:[%f] > sRbcore[%f]\n", rb, (float)tFirFilter.sRbcoe / 100);
+	m_pLog->logRecord("筛选6 成功 rb:[%f] >= sRbcore[%f]\n", rb, (float)tFirFilter.sRbcoe / 100);
 	return true;
 }
 

@@ -24,6 +24,7 @@ public:
 	void dataRecord(/*string strFunc,int iLine, string strMod, */char* cFormat, ...);
 	void clearLog();
 	static bool m_bEnableLog;
+	int CreatDir(const char * dirPath);
 private:
 	std::string m_logBuffer;
 	std::string m_dataBuffer;

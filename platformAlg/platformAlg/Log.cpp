@@ -1,6 +1,12 @@
 #include "StdAfx.h"
 #include "log.h"
 #include "Global.h"
+#include <windows.h>
+#include <direct.h> //_mkdir函数的头文件
+#include <io.h>     //_access函数的头文件
+
+#define ACCESS _access 
+#define MKDIR(a) _mkdir((a)) 
 
 using namespace std;
 
@@ -14,19 +20,59 @@ CLog::~CLog()
 {
 }
 
+
+int CLog::CreatDir(const char * dirPath) 
+{ 
+   char* pszDir = new char[300];
+   memset(pszDir, 0, 300);
+   memcpy(pszDir, dirPath, strlen(dirPath));
+  int i = 0; 
+  int iRet; 
+  int iLen = strlen(pszDir); 
+  
+  //在末尾加/ 
+  if (pszDir[iLen - 1] != '\\' && pszDir[iLen - 1] != '/') 
+  { 
+    pszDir[iLen] = '/'; 
+    pszDir[iLen + 1] = '\0'; 
+  } 
+  
+  // 创建目录 
+  for (i = 0;i <= iLen;i ++) 
+  { 
+    if (pszDir[i] == '\\' || pszDir[i] == '/') 
+    {  
+      pszDir[i] = '\0'; 
+  
+      //如果不存在,创建 
+      iRet = ACCESS(pszDir,0); 
+      if (iRet != 0) 
+      { 
+        iRet = MKDIR(pszDir); 
+        if (iRet != 0) 
+        { 
+          return -1; 
+        }  
+      } 
+      //支持linux,将所有\换成/ 
+      pszDir[i] = '/'; 
+    }  
+  } 
+  return 0; 
+} 
 void CLog::Init(const std::string & path){
 	CHECK_LOG_ENABLE
 	m_logBuffer = "";
 	m_dataBuffer = "";
 	m_path = AlgorithmLog::LOG_FOLDER + path;
 	
-	system(("mkdir " + m_path).c_str());
+	CreatDir((m_path).c_str() );
 }
 
 
 void  CLog::Flush(){
 
-	char buf_time[20] = { 0 };
+	char buf_time[100] = { 0 };
 	static int j = 0;
 	stamp_to_standard(time(NULL), buf_time, "%Y_%m_%d_%H_%M_%S");
 	{

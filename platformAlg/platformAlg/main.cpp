@@ -92,11 +92,12 @@ int main(int argc, char* argv)
 {
 	EnableAlgLog(true);
 	std::map<tagStockCodeInfo, std::vector<tagKline>>  input;
-	ReadKlineData("D:\\data1.txt", input);
+	ReadKlineData("D:\\1.txt", input);
 
 	std::map<tagStockCodeInfo, tagOutput>  output;
 
-	alg_platform(input, output, eSinglePlatForm, 10, false);
+	for(int i = 0; i < 10000; ++i)
+		alg_platform(input, output, eSinglePlatForm, 10, false);
 
 	TFirstFilter filter;
 	filter.sA3Switch = eAB;
@@ -109,8 +110,8 @@ int main(int argc, char* argv)
 	filter.tLineNum.iMinka = 6;
 	filter.tLineNum.iMinkb = 1;
 	filter.tLineNum.iMaxkb = 12;
-
-	alg_stock2(input, output, filter);
+	for(int i = 0; i < 10000; ++i)
+		alg_stock2(input, output, filter);
 
 	TThirdFilter second;
 	second.tLineNum.iMaxka = 20;
@@ -120,7 +121,8 @@ int main(int argc, char* argv)
 	second.sCallbackRange = 80;
 	second.bA5Switch = false;
 
-	alg_stock2(input, output, second);
+	for(int i = 0; i < 10000; ++i)
+		alg_stock2(input, output, second);
 
 
 
