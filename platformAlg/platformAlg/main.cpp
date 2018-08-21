@@ -96,32 +96,29 @@ int main(int argc, char* argv)
 
 	std::map<tagStockCodeInfo, tagOutput>  output;
 
-	for(int i = 0; i < 10000; ++i)
 		alg_platform(input, output, eSinglePlatForm, 10, false);
 
 	TFirstFilter filter;
 	filter.sA3Switch = eAB;
-	filter.bA4Switch = true;
-	filter.bA5Switch = true;
-	filter.bA6Switch = true;
+	filter.bA4Switch = false;
+	filter.bA5Switch = false;
+	filter.bA6Switch = false;
 	filter.sCallbackRange = 90;
 	filter.sRbcoe = 10;
 	filter.tLineNum.iMaxka = 20;
-	filter.tLineNum.iMinka = 6;
+	filter.tLineNum.iMinka = 1;
 	filter.tLineNum.iMinkb = 1;
 	filter.tLineNum.iMaxkb = 12;
-	for(int i = 0; i < 10000; ++i)
 		alg_stock2(input, output, filter);
 
 	TThirdFilter second;
 	second.tLineNum.iMaxka = 20;
-	second.tLineNum.iMinka = 6;
+	second.tLineNum.iMinka = 1;
 	second.tLineNum.iMinkb = 1;
 	second.tLineNum.iMaxkb = 12;
 	second.sCallbackRange = 80;
 	second.bA5Switch = false;
 
-	for(int i = 0; i < 10000; ++i)
 		alg_stock2(input, output, second);
 
 

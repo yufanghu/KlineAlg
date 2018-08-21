@@ -57,7 +57,7 @@ bool CCaculateSotck2::GetLowOrHighClose(const std::vector<tagKline>& itvDataBegi
 	}
 	else
 	{
-		//获取最高收盘价  如果收盘价相同则最高价低的为最高收盘价 
+		//获取最高收盘价  如果收盘价相同则最高价高的为最高收盘价 
 		for (int i = start + 1; i < end; ++i)
 		{
 			if (tagResult.close < itvDataBegin[i].close)
@@ -67,8 +67,15 @@ bool CCaculateSotck2::GetLowOrHighClose(const std::vector<tagKline>& itvDataBegi
 			}
 			else if (tagResult.close == itvDataBegin[i].close)
 			{
-				tagResult = tagResult.high < itvDataBegin[i].high ? itvDataBegin[i] : tagResult;
-				nPos = tagResult.high > itvDataBegin[i].high ? i : nPos;
+				if( tagResult.high  == itvDataBegin[i].high){
+					nPos = nPos;
+					//tagResult = 
+				}
+				else{ //判断最高价
+					nPos = tagResult.high > itvDataBegin[i].high ? nPos : i;
+					tagResult = tagResult.high < itvDataBegin[i].high ? itvDataBegin[i] : tagResult;
+				}
+
 			}
 		}
 	}
@@ -234,7 +241,7 @@ bool CCaculateSotck2::filterStepA1(const std::vector<tagKline>& vecKline, tagKli
 	}
 	stamp_to_standard(tB2Pos.time, buf);
 	m_pLog->logRecord("筛选1 B2收盘最高数据：pos:%d %s open %f high %f low %f close %f \n", nB2Pos,buf, tB2Pos.open, tB2Pos.high, tB2Pos.low, tB2Pos.close);
-	m_pLog->logRecord("筛选1 成功");
+	m_pLog->logRecord("筛选1 成功\n");
 	return true;
 }
 
@@ -259,7 +266,7 @@ bool CCaculateSotck2::filterStepA2(const std::vector<tagKline>& vecKline, TA2 pe
 	}
 	m_pLog->logRecord("筛选2 A-B2 K线数[%d] 满足[%d]-[%d]\n", nAPeriod, period.iMinka, period.iMaxka);
 	//条件B、筛选出数据B2（包含该数据）到数据末期，k线根数符合周期系数KB(6-8默认）范围内
-	int nBPeriod = vecKline.size() - nB2Pos + 1;
+	int nBPeriod = vecKline.size() - nB2Pos;
 	if (nBPeriod < period.iMinkb || nBPeriod > period.iMaxkb)
 	{
 		m_pLog->logRecord("筛选2 末尾-B2 K线数[%d] 不在范围[%d]-[%d]\n", nBPeriod, period.iMinkb, period.iMaxkb);
