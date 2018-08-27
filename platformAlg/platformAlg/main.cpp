@@ -90,9 +90,9 @@ void ReadKlineData(const char* path, std::vector<tagKline> & klineVector) {
 
 int main(int argc, char* argv)
 {
-	EnableAlgLog(true);
+	EnableAlgLog(false);
 	std::map<tagStockCodeInfo, std::vector<tagKline>>  input;
-	ReadKlineData("D:\\1.txt", input);
+	ReadKlineData("i:\\1.txt", input);
 
 	std::map<tagStockCodeInfo, tagOutput>  output;
 

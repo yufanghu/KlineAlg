@@ -4,7 +4,7 @@
 #include "AlgStock1.h"
 #include "AlgPlatForm.h"
 #include "Log.h"
-
+#include "Global.h"
 bool alg_platform(const std::map<tagStockCodeInfo, std::vector<tagKline>>& input, std::map<tagStockCodeInfo, tagOutput>& output,
 	                             EPlatFormType platformType, short avgFac, bool bFiring)
 {
@@ -57,5 +57,5 @@ bool alg_stock1(const std::map<tagStockCodeInfo, std::vector<tagKline>>& inMap, 
 
 void EnableAlgLog(bool bEnable)
 {
-	CLog::m_bEnableLog = bEnable;
+	g_bEnableLog = bEnable;
 }

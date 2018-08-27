@@ -10,9 +10,6 @@
 
 using namespace std;
 
-bool CLog::m_bEnableLog = true;
-#define CHECK_LOG_ENABLE if(!m_bEnableLog) return;
-
 CLog::CLog()
 {}
 

@@ -352,15 +352,15 @@ bool CCaculateAlg::double_plat(const std::map<tagStockCodeInfo, std::vector<tagK
 	for (iter = input.begin(), nIndex = 0; iter != input.end(); ++iter)
 	{
 		if(iter->second.size() > 0){
-			tagKline temp = iter->second.at(iter->second.size()-1);
+			/*tagKline temp = iter->second.at(iter->second.size()-1);
 			memset(buf, 0, sizeof(buf));
 			stamp_to_standard(temp.time, buf, "%Y%m%d");
 			if (strcmp(buf, DEADLINE_DATE) >= 0)
 			{
-				m_pLog->clearLog();
-				m_pLog->logRecord("程序试用期已经结束，程序退出");
-				return true;
-			}
+			m_pLog->clearLog();
+			m_pLog->logRecord("程序试用期已经结束，程序退出");
+			return true;
+			}*/
 		}
 
 		PrintHead(iter->first, ++nIndex);
