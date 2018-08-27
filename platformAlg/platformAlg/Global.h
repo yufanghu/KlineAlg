@@ -25,6 +25,9 @@ static void stamp_to_standard(time_t stampTime, char* s, char* format = NULL)
 
 
 static bool CheckLicense(__int64 time){
+	//×¢ÊÍµôlicense
+	return true;
+
 	char buf[256] = { 0 };
 	memset(buf, 0, sizeof(buf));
 	stamp_to_standard(time, buf, "%Y%m%d");
