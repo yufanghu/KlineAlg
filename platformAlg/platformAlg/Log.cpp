@@ -10,6 +10,7 @@
 
 using namespace std;
 
+bool CLog::g_bEnableLog = true;
 CLog::CLog()
 {}
 

@@ -7,11 +7,10 @@
 #define  DEADLINE_DATE "20181231"
 
 
-#define CHECK_LOG_ENABLE if(!g_bEnableLog) return;
 
 namespace{
 	
-	bool g_bEnableLog = true;
+
 
 	static void stamp_to_standard(time_t stampTime, char* s, char* format = NULL)
 	{
