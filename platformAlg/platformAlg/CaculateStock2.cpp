@@ -481,7 +481,7 @@ bool CCaculateSotck2::filterStepA6Advanced(const std::vector<tagKline>& vecKline
 	
 	if ( pricePercent <= tFirFilter.sUpLimit && pricePercent >= tFirFilter.sDownLimit )
 	{
-		m_pLog->logRecord("进阶筛选6成功 幅度: 上限[%f] >= [%f] >= 下限[%f]\n", tFirFilter.sUpLimit,
+		m_pLog->logRecord("进阶筛选6成功 幅度: 上限[%d] >= [%f] >= 下限[%d]\n", tFirFilter.sUpLimit,
 			pricePercent,tFirFilter.sDownLimit);
 		return true;
 	}

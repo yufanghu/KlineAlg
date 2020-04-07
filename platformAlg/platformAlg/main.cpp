@@ -91,35 +91,39 @@ void ReadKlineData(const char* path, std::vector<tagKline> & klineVector) {
 int main(int argc, char* argv)
 {
 	EnableAlgLog(true);
-	std::map<tagStockCodeInfo, std::vector<tagKline>>  input;
-	ReadKlineData("D:\\kline\\source\\data.txt", input);
+	std::vector<tagKline>  input;
+	ReadKlineData("D:\\data1.txt", input);
 
-	std::map<tagStockCodeInfo, tagOutput>  output;
+	//std::map<tagStockCodeInfo, tagOutput>  output;
 
-	alg_platform(input, output, eSinglePlatForm, 10, false);
+	/*alg_platform(input, output, eSinglePlatForm, 10, false);
 
 	TFirstFilter filter;
-	filter.sA3Switch = eAB;
+	filter.sA3Switch = eOff;
 	filter.bA4Switch = false;
 	filter.bA5Switch = false;
-	filter.bA6Switch = false;
+	filter.bA6Switch = true;
 	filter.sCallbackRange = 90;
 	filter.sRbcoe = 10;
-	filter.tLineNum.iMaxka = 20;
+	filter.tLineNum.iMaxka = 30;
 	filter.tLineNum.iMinka = 1;
 	filter.tLineNum.iMinkb = 1;
 	filter.tLineNum.iMaxkb = 12;
+	filter.sUpLimit = 80;
+	filter.sDownLimit = 10;
 	alg_stock2(input, output, filter);
 
 	TThirdFilter second;
-	second.tLineNum.iMaxka = 20;
+	second.tLineNum.iMaxka = 30;
 	second.tLineNum.iMinka = 1;
 	second.tLineNum.iMinkb = 1;
 	second.tLineNum.iMaxkb = 12;
 	second.sCallbackRange = 80;
 	second.bA5Switch = false;
 
-		alg_stock2(input, output, second);
+		alg_stock2(input, output, second);*/
+	std::vector<tagQuota> output;
+	alg_stock4(input,output);
 
 
 

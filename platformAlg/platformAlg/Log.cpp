@@ -78,7 +78,7 @@ void  CLog::Flush(){
 		CHECK_LOG_ENABLE
 		char name[256] = { 0 };
 
-		sprintf_s(name, "%s/%s_%d_log.txt", m_path.c_str(), buf_time, j++);
+		sprintf_s(name, "%s/%s_%d_log.txt", m_path.c_str(), buf_time.c_str(), j++);
 
 		FILE * pFile = fopen(name, "a");
 		if (pFile){
@@ -89,7 +89,7 @@ void  CLog::Flush(){
 	}
 	{
 	char buf[256] = { 0 };
-	sprintf(buf, "%s/%s_%d_data.txt", m_path.c_str(), buf_time, j-1);
+	sprintf(buf, "%s/%s_%d_data.txt", m_path.c_str(), buf_time.c_str(), j - 1);
 	FILE * pFile = fopen(buf, "a");
 	if (pFile){
 		fwrite(m_dataBuffer.c_str(), m_dataBuffer.length(), 1, pFile);

@@ -185,8 +185,8 @@ namespace alg{
 		bool	bA6Switch;        //A6步骤开关	
 		short	sCallbackRange;   //双底调整幅度  整数形式：1-99  
 		short	sRbcoe;           //阳k线比例  整数形式：1-99
-		short   sUpLimit;             //上涨幅度幅度上限
-		short   sDownLimit;           //上涨幅度幅度下限
+		short   sUpLimit;             //上涨幅度（默认20）， 1-200
+		short   sDownLimit;           //下跌幅度（默认200），1-200
 		TFirstFilter() 
 			:sA3Switch(0), 
 			bA4Switch(false), 
@@ -238,28 +238,40 @@ namespace alg{
 	};
 
 #pragma endregion 算法三
+	
 
-#pragma region 算法四
-	//平台级别
+#pragma endregion 算法四
 	enum EPlatLevel{
-		eLevelOne,    //一级平台
-		eLevelTwo,    //二级平台
-		eLevelThree   //三级平台
+		eLevelOne,   //一级平台
+		eLevelTwo,   //二级平台
+		eLevelThree  //三级平台
 	};
-     
-	 struct tagQuotaA{
-		 EPlatLevel level;
-		 std::vector<__int64> klinePos;     //K线位置点(时间戳)集合  首位 分别代表ha1 ha2
-		 __int64           caPos;           //CA 位置点(时间戳)
-	 };
-	 
-	 struct tagQuotaB{
-		  EPlatLevel level;
-		  std::vector<__int64> klinePos;       //K线位置点(时间戳)集合  首位 分别代表hb1 hb2
-		  __int64           caPosA;            //第一平台CA位置点(时间戳)
-	 };
-	 
-#pragma endregion 算法三
+
+	enum EStep{
+		eStepA,
+		eStepAB,
+	};
+
+	struct tagQuotaA{
+		__int64 h1Time;		//h1时间戳
+		__int64 h2Time;		//h2时间戳
+		__int64 caTime;		//ca时间戳
+		EPlatLevel level;	//平台级别
+	};
+
+	struct tagQuotaB{
+		__int64 h1Time;    //h1时间戳  
+		__int64 h2Time;    //h2时间戳
+		EPlatLevel level;  //平台级别
+		bool bIsBreak;     //最后一根是否突破 true表示h2已经突破，已成型;false表示未突破，形成中
+	};
+
+	struct tagQuota{
+		EStep step;          //结果类型  eStepA: 只有quotaA是有效数据（只有A）；eStepB: quotaA和quotaB均为有效数据（包含A和B） 
+		tagQuotaA quotaA;
+		tagQuotaB quotaB;
+	};
+#pragma region 算法四
 }
 
 using namespace alg;
@@ -304,6 +316,16 @@ bool  alg_stock2(const std::map<tagStockCodeInfo, std::vector<tagKline>> &inMap,
 */
 /************************************************************************/
 bool alg_stock1(const std::map<tagStockCodeInfo, std::vector<tagKline>>& inMap, std::map<tagStockCodeInfo, outKline> & outMap);
+
+
+/************************************************************************/
+/*
+算法四入口 20200401
+@param inStockKlines  输入参数 某只股票的k线集合
+@param quota 输出参数 输出的指标结果集合
+*/
+/************************************************************************/
+void alg_stock4(const std::vector<tagKline>& inStockKlines, std::vector<tagQuota> & quota);
 
 /************************************************************************/
 /*
