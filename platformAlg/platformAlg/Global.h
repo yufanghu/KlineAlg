@@ -3,48 +3,47 @@
 
 #include <time.h>
 #include <string.h>
+#include <string>
 
 #define  DEADLINE_DATE "20181231"
 
+static bool stamp_to_standard(time_t stampTime, std::string& str, char* format = NULL)
+{
 
+	struct tm tm_;
 
-namespace{
-	
-
-
-	static void stamp_to_standard(time_t stampTime, char* s, char* format = NULL)
+	int ret = localtime_s(&tm_, &stampTime);
+	if(ret != 0)
 	{
-		CHECK_LOG_ENABLE
-		time_t tick = (time_t)stampTime;
-		struct tm tm_;
-
-		localtime_s(&tm_, &tick);
-		int size = strlen(s) > 32 ? strlen(s) : 32;
-		if (format == NULL)
-		{
-			strftime(s, size, "%Y-%m-%d", &tm_);
-		}
-		else
-		{
-			strftime(s, size, format, &tm_);
-		}
+		return false;
 	}
+	char s[128] = {0};
+	if (format == NULL)
+	{
+		strftime(s, sizeof(s), "%Y-%m-%d", &tm_);
+	}
+	else
+	{
+		strftime(s, sizeof(s), format, &tm_);
+	}
+	str = s;
+	return true;
+}
 
 
-	static bool CheckLicense(__int64 time){
-		//×¢ÊÍµôlicense
-		return true;
-
-		char buf[256] = { 0 };
-		memset(buf, 0, sizeof(buf));
-		stamp_to_standard(time, buf, "%Y%m%d");
-		if (strcmp(buf, DEADLINE_DATE) >= 0)
+static bool CheckLicense(__int64 time){
+	return true;
+	std::string str;
+	if(stamp_to_standard(time, str, "%Y%m%d")){
+		if (strcmp(str.c_str(), DEADLINE_DATE) >= 0)
 		{
 			return false;
 		}
-		return true;
 	}
-
+	else
+		return false;
+	
+	return true;
 }
 
 

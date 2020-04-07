@@ -10,7 +10,9 @@
 
 using namespace std;
 
-bool CLog::g_bEnableLog = true;
+bool CLog::m_bEnableLog = true;
+#define CHECK_LOG_ENABLE if(!m_bEnableLog) return;
+
 CLog::CLog()
 {}
 
@@ -69,9 +71,8 @@ void CLog::Init(const std::string & path){
 
 
 void  CLog::Flush(){
-
-	char buf_time[100] = { 0 };
 	static int j = 0;
+	std::string buf_time;
 	stamp_to_standard(time(NULL), buf_time, "%Y_%m_%d_%H_%M_%S");
 	{
 		CHECK_LOG_ENABLE

@@ -194,7 +194,7 @@ bool CCaculateSotck2::filterStepA1(const std::vector<tagKline>& vecKline, tagKli
 	}
 	tagKline tAPos;
 	bool bRet = true;
-	char buf[32];
+	std::string buf;
 	bRet = GetLowOrHighClose(vecKline, 0, vecKline.size(), tAPos, nAPos, true);
 	if (nAPos == 0)
 	{
@@ -214,8 +214,13 @@ bool CCaculateSotck2::filterStepA1(const std::vector<tagKline>& vecKline, tagKli
 	}
 
 
-	stamp_to_standard(tAPos.time, buf);
-	m_pLog->logRecord("筛选1 A收盘最低数据：pos:%d %s open %f high %f low %f close %f \n",nAPos, buf, tAPos.open, tAPos.high, tAPos.low, tAPos.close);
+	if(!stamp_to_standard(tAPos.time, buf))
+	{
+		m_pLog->logRecord("k线时间戳无效 pos[%d]-time[%I64d]\n", nAPos, tAPos.time);
+		return false;
+	}
+	
+	m_pLog->logRecord("筛选1 A收盘最低数据：pos:%d %s open %f high %f low %f close %f \n",nAPos, buf.c_str(), tAPos.open, tAPos.high, tAPos.low, tAPos.close);
 
 
 	//搜索A数据日期前收盘价最高B1数据
@@ -227,7 +232,7 @@ bool CCaculateSotck2::filterStepA1(const std::vector<tagKline>& vecKline, tagKli
 		return false;
 	}
 	stamp_to_standard(tB1Pos.time, buf);
-	m_pLog->logRecord("筛选1 B1收盘最高数据：pos:%d %s open %f high %f low %f close %f \n",nB1Pos, buf, tB1Pos.open, tB1Pos.high, tB1Pos.low, tB1Pos.close);
+	m_pLog->logRecord("筛选1 B1收盘最高数据：pos:%d %s open %f high %f low %f close %f \n",nB1Pos, buf.c_str(), tB1Pos.open, tB1Pos.high, tB1Pos.low, tB1Pos.close);
 
 	
 
@@ -240,7 +245,7 @@ bool CCaculateSotck2::filterStepA1(const std::vector<tagKline>& vecKline, tagKli
 		return false;
 	}
 	stamp_to_standard(tB2Pos.time, buf);
-	m_pLog->logRecord("筛选1 B2收盘最高数据：pos:%d %s open %f high %f low %f close %f \n", nB2Pos,buf, tB2Pos.open, tB2Pos.high, tB2Pos.low, tB2Pos.close);
+	m_pLog->logRecord("筛选1 B2收盘最高数据：pos:%d %s open %f high %f low %f close %f \n", nB2Pos,buf.c_str(), tB2Pos.open, tB2Pos.high, tB2Pos.low, tB2Pos.close);
 	m_pLog->logRecord("筛选1 成功\n");
 	return true;
 }
@@ -449,6 +454,41 @@ bool CCaculateSotck2::filterStepA6(const std::vector<tagKline>& vecKline, TFirst
 	return true;
 }
 
+bool CCaculateSotck2::filterStepA6Advanced(const std::vector<tagKline>& vecKline, TFirstFilter& tFirFilter, int nAPos, int nB2Pos)
+{
+	/*
+	a. 计算上涨价格
+	上涨价格 =B2数据最高价 - A数据最低价
+	c、	 上涨幅度 = 上涨价格/ A数据最低价
+
+	*/
+	if (tFirFilter.sUpLimit < tFirFilter.sDownLimit){
+		m_pLog->logRecord("进阶筛选6失败涨幅上限[%d]小于下限[%d]\n",  tFirFilter.sUpLimit, tFirFilter.sDownLimit);
+		return false;
+	}
+	m_pLog->logRecord("进阶筛选6开始 涨幅上限[%d], 下限[%d]\n",  tFirFilter.sUpLimit, tFirFilter.sDownLimit);
+	double priceDelta = vecKline[nB2Pos].high - vecKline[nAPos].low;
+	double pricePercent = 0.0f;
+	if(vecKline[nAPos].low > 0)
+	{
+		pricePercent = priceDelta * 100 /vecKline[nAPos].low;
+	}
+	else
+	{
+		m_pLog->logRecord("进阶筛选6 失败 A最低价格[%f]错误\n",  vecKline[nAPos].low);
+		return false;
+	}
+	
+	if ( pricePercent <= tFirFilter.sUpLimit && pricePercent >= tFirFilter.sDownLimit )
+	{
+		m_pLog->logRecord("进阶筛选6成功 幅度: 上限[%f] >= [%f] >= 下限[%f]\n", tFirFilter.sUpLimit,
+			pricePercent,tFirFilter.sDownLimit);
+		return true;
+	}
+
+	return false;
+}
+
 //获取阳线个数
 int CCaculateSotck2::GetSunLineNum(std::vector<tagKline>::const_iterator itvDataBegin,
 	 int end)
@@ -581,7 +621,7 @@ bool CCaculateSotck2::filter2Level1(const  std::map<tagStockCodeInfo, std::vecto
 		}
 		else
 		{
-			bRet = filterStepA6(vecKline, tFirFilter, nAPos);
+			bRet = filterStepA6Advanced(vecKline, tFirFilter, nAPos, nB2Pos);
 			if (!bRet)
 			{
 				m_pLog->logRecord("筛选第6步失败\n");
@@ -698,7 +738,6 @@ bool CCaculateSotck2::filter2Level3(const std::map<tagStockCodeInfo, std::vector
 				return true;
 			}
 		}
-
 
 		//m_pLog->logRecord("\n");
 		//m_pLog->logRecord("市场：[%d] 代码：[%s]\n", iter->first.market, iter->first.stockcode.c_str());

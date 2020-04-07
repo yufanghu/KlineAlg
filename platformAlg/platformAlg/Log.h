@@ -11,9 +11,6 @@
 #include <fstream>
 #include <stdarg.h>
 #include <time.h>
-
-
-#define CHECK_LOG_ENABLE if(!CLog::g_bEnableLog) return;
 namespace AlgorithmLog{
 	const std::string LOG_FOLDER = "Algorithm_Log\\";
 }
@@ -26,18 +23,12 @@ public:
 	void logRecord(/*string strFunc,int iLine, string strMod, */char* cFormat, ...);
 	void dataRecord(/*string strFunc,int iLine, string strMod, */char* cFormat, ...);
 	void clearLog();
+	static bool m_bEnableLog;
 	int CreatDir(const char * dirPath);
-
-
-	static bool g_bEnableLog;
 private:
 	std::string m_logBuffer;
 	std::string m_dataBuffer;
 	std::string m_path;
-
-
-
-		
 };
 
 #endif

@@ -185,13 +185,17 @@ namespace alg{
 		bool	bA6Switch;        //A6步骤开关	
 		short	sCallbackRange;   //双底调整幅度  整数形式：1-99  
 		short	sRbcoe;           //阳k线比例  整数形式：1-99
+		short   sUpLimit;             //上涨幅度幅度上限
+		short   sDownLimit;           //上涨幅度幅度下限
 		TFirstFilter() 
 			:sA3Switch(0), 
 			bA4Switch(false), 
 			bA5Switch(false), 
 			sCallbackRange(1),
 			bA6Switch(false),
-			sRbcoe(1)
+			sRbcoe(1),
+			sUpLimit(20),
+			sDownLimit(200)
 		{
 		};
 	};
@@ -235,7 +239,27 @@ namespace alg{
 
 #pragma endregion 算法三
 
-
+#pragma region 算法四
+	//平台级别
+	enum EPlatLevel{
+		eLevelOne,    //一级平台
+		eLevelTwo,    //二级平台
+		eLevelThree   //三级平台
+	};
+     
+	 struct tagQuotaA{
+		 EPlatLevel level;
+		 std::vector<__int64> klinePos;     //K线位置点(时间戳)集合  首位 分别代表ha1 ha2
+		 __int64           caPos;           //CA 位置点(时间戳)
+	 };
+	 
+	 struct tagQuotaB{
+		  EPlatLevel level;
+		  std::vector<__int64> klinePos;       //K线位置点(时间戳)集合  首位 分别代表hb1 hb2
+		  __int64           caPosA;            //第一平台CA位置点(时间戳)
+	 };
+	 
+#pragma endregion 算法三
 }
 
 using namespace alg;

@@ -81,9 +81,13 @@ bool CCaculateAlg::single_double_step_one(const std::vector<tagKline>& kLineData
 		{
 			if (nCount <= nMax)
 			{
-				char buf[32];
-				stamp_to_standard(kLineData[i].time, buf);
-				m_pLog->logRecord("step 1[%d] %s close %f avg %f \n", nCount, buf, kLineData[i].close, dAvg);
+				std::string buf;
+				if(!stamp_to_standard(kLineData[i].time, buf))
+				{
+					m_pLog->logRecord("k线时间戳无效 pos[%d]-time[%I64d]\n", i, kLineData[i].time);
+					return false;
+				}
+				m_pLog->logRecord("step 1[%d] %s close %f avg %f \n", nCount, buf.c_str(), kLineData[i].close, dAvg);
 				nCount++;
 			}
 			else
@@ -148,10 +152,16 @@ bool CCaculateAlg::single_double_step_two(const std::vector<tagKline>& kLineData
 
 				if (++nCount == 4)
 				{
-					char ss[32];
+					std::string ss;
+
 					nPos = j - 4;
-					stamp_to_standard(kLineData[nPos].time, ss);
-					m_pLog->logRecord("step2筛选成功 date[%s] close %f high %f\n", ss, kLineData[nPos].close, kLineData[nPos].high);
+					if(!stamp_to_standard(kLineData[nPos].time, ss))
+					{
+						m_pLog->logRecord("k线时间戳无效 pos[%d]-time[%I64d]\n", nPos, kLineData[nPos].time);
+						return false;
+					}
+
+					m_pLog->logRecord("step2筛选成功 date[%s] close %f high %f\n", ss.c_str(), kLineData[nPos].close, kLineData[nPos].high);
 					return true;
 				}
 			}
@@ -165,9 +175,13 @@ bool CCaculateAlg::single_double_step_two(const std::vector<tagKline>& kLineData
 	}
 
 
-	char ss[32];
-	stamp_to_standard(kLineData[nPos].time, ss);
-	m_pLog->logRecord("平台第二步筛选失败 N[%s]\n", ss);
+	std::string ss;
+	if(!stamp_to_standard(kLineData[nPos].time, ss))
+	{
+		m_pLog->logRecord("k线时间戳无效 pos[%d]-time[%I64d]\n", nPos, kLineData[nPos].time);
+		return false;
+	}
+	m_pLog->logRecord("平台第二步筛选失败 N[%s]\n", ss.c_str());
 
 	return false;
 }
@@ -178,23 +192,36 @@ bool CCaculateAlg::single_plat_step_third(const std::vector<tagKline>& kLineData
 
 	for (int i = nPos + 5; i <= nEnd; ++i)
 	{
-		char ss[32];
-		stamp_to_standard(kLineData[i].time, ss);
+		std::string ss;
+	if(!stamp_to_standard(kLineData[i].time, ss))
+	{
+		m_pLog->logRecord("k线时间戳无效 pos[%d]-time[%I64d]\n", i, kLineData[i].time);
+		return false;
+	}
+
+		//stamp_to_standard(kLineData[i].time, ss);
 		
 		if (kLineData[i].close < kLineData[nPos].high)
 		{
-			m_pLog->logRecord("step3 %s close %f 小于 high %f\n", ss, kLineData[i].close, kLineData[nPos].high);
+			m_pLog->logRecord("step3 %s close %f 小于 high %f\n", ss.c_str(), kLineData[i].close, kLineData[nPos].high);
 			continue;
 		}
 		else
 		{
-			m_pLog->logRecord("step3 %s close %f 不小于 high %f\n， 第三步失败", ss, kLineData[i].close, kLineData[nPos].high);
+			m_pLog->logRecord("step3 %s close %f 不小于 high %f\n， 第三步失败", ss.c_str(), kLineData[i].close, kLineData[nPos].high);
 			return false;
 		}
 	}
-	char ss[32];
-	stamp_to_standard(kLineData[nPos].time, ss);
-	m_pLog->logRecord("单平台第三步筛选成功[%s]\n", ss);
+	
+	std::string ss;
+	if(!stamp_to_standard(kLineData[nPos].time, ss))
+	{
+		m_pLog->logRecord("k线时间戳无效 pos[%d]-time[%I64d]\n",nPos, kLineData[nPos].time);
+		return false;
+	}
+
+
+	m_pLog->logRecord("单平台第三步筛选成功[%s]\n", ss.c_str());
 	return true;
 }
 
@@ -213,8 +240,14 @@ bool CCaculateAlg::is_fairing(const std::vector<tagKline>& kLineData, int& nPos,
 		firRes = kLineData[size - 1].close > kLineData[nPos].high ? true : false;
 		if (firRes)
 		{
-			char ss[32];
-			stamp_to_standard(kLineData[size - 1].time, ss);
+			
+			std::string ss;
+			if(!stamp_to_standard(kLineData[size - 1].time, ss))
+			{
+				m_pLog->logRecord("k线时间戳无效 pos[%d]-time[%I64d]\n",size - 1, kLineData[size - 1].time);
+				return false;
+			}
+
 			m_pLog->logRecord("起爆成功 %s close %f high %f\n", ss, kLineData[size - 1].close, kLineData[nPos].high);
 			return true;
 		}
@@ -245,9 +278,16 @@ bool CCaculateAlg::double_step_third(const std::vector<tagKline>& kLineData, int
 		if (kLineData[i].close > kLineData[nPos].high)
 		{
 			nPos = i;
-			char ss[32];
-			stamp_to_standard(kLineData[nPos].time, ss);
-			m_pLog->logRecord("双平台第三步筛选成功 [%s]\n", ss);
+			std::string ss;
+			if(!stamp_to_standard(kLineData[nPos].time, ss))
+			{
+				m_pLog->logRecord("k线时间戳无效 pos[%d]-time[%I64d]\n",nPos, kLineData[nPos].time);
+				return false;
+			}
+
+			//char ss[32];
+			//stamp_to_standard(kLineData[nPos].time, ss);
+			m_pLog->logRecord("双平台第三步筛选成功 [%s]\n", ss.c_str());
 			return true;
 		}
 		else
@@ -256,9 +296,15 @@ bool CCaculateAlg::double_step_third(const std::vector<tagKline>& kLineData, int
 		}
 	}
 
-	char ss[32];
-	stamp_to_standard(kLineData[nPos].time, ss);
-	m_pLog->logRecord("双平台第三步筛选失败 [%s]\n", ss);
+	std::string ss;
+	if(!stamp_to_standard(kLineData[nPos].time, ss))
+	{
+		m_pLog->logRecord("k线时间戳无效 pos[%d]-time[%I64d]\n",nPos, kLineData[nPos].time);
+		return false;
+	}
+
+
+	m_pLog->logRecord("双平台第三步筛选失败 [%s]\n", ss.c_str());
 	return false;
 }
 
@@ -282,9 +328,17 @@ bool CCaculateAlg::double_step_fourth(const std::vector<tagKline>& kLineData, in
 				{
 					nPos = j - 4;
 
-					char ss[32];
-					stamp_to_standard(kLineData[i].time, ss);
-					m_pLog->logRecord("双平台第四步筛选成功 [%s]\n", ss);
+					//char ss[32];
+					//stamp_to_standard(kLineData[i].time, ss);
+
+					std::string ss;
+					if(!stamp_to_standard(kLineData[i].time, ss))
+					{
+						m_pLog->logRecord("k线时间戳无效 pos[%d]-time[%I64d]\n",nPos, kLineData[i].time);
+						return false;
+					}
+
+					m_pLog->logRecord("双平台第四步筛选成功 [%s]\n", ss.c_str());
 					return true;
 				}
 			}
@@ -297,9 +351,16 @@ bool CCaculateAlg::double_step_fourth(const std::vector<tagKline>& kLineData, in
 		
 	}
 
-	char ss[32];
-	stamp_to_standard(kLineData[nPos].time, ss);
-	m_pLog->logRecord("双平台第四步筛选失败 [%s]\n", ss);
+	std::string ss;
+	if(!stamp_to_standard(kLineData[nPos].time, ss))
+	{
+		m_pLog->logRecord("k线时间戳无效 pos[%d]-time[%I64d]\n",nPos, kLineData[nPos].time);
+		return false;
+	}
+
+	//char ss[32];
+	//stamp_to_standard(kLineData[nPos].time, ss);
+	m_pLog->logRecord("双平台第四步筛选失败 [%s]\n", ss.c_str());
 	return false;
 }
 
@@ -315,31 +376,42 @@ bool CCaculateAlg::double_step_fifth(const std::vector<tagKline>& kLineData, con
 		}
 		else
 		{
-			char ss[32];
-			stamp_to_standard(kLineData[nPos].time, ss);
-			m_pLog->logRecord("双平台第五步筛选失败 [%s]\n", ss);
+		/*	char ss[32];
+			stamp_to_standard(kLineData[nPos].time, ss);*/
+			std::string ss;
+			if(!stamp_to_standard(kLineData[nPos].time, ss))
+			{
+				m_pLog->logRecord("k线时间戳无效 pos[%d]-time[%I64d]\n",nPos, kLineData[nPos].time);
+				return false;
+			}
+
+			m_pLog->logRecord("双平台第五步筛选失败 [%s]\n", ss.c_str());
 			return false;
 		}
 	}
 
-	char ss[32];
 
+	std::string ss;
+	if(!stamp_to_standard(kLineData[nPos].time, ss))
+	{
+		m_pLog->logRecord("k线时间戳无效 pos[%d]-time[%I64d]\n",nPos, kLineData[nPos].time);
+		return false;
+	}
 
-	stamp_to_standard(kLineData[nPos].time, ss);
-	m_pLog->logRecord("双平台第五步筛选成功 [%s]", ss);
+	m_pLog->logRecord("双平台第五步筛选成功 [%s]", ss.c_str());
 	return true;
 }
 
 bool CCaculateAlg::double_plat(const std::map<tagStockCodeInfo, std::vector<tagKline>> & input,
 	std::map<tagStockCodeInfo, tagOutput> & output, short avgFac, bool bFiring /*= false*/)
 {
-	char buf[32] = { 0 };
+	std::string buf;
 	stamp_to_standard(time(NULL), buf,"%Y-%m-%d %H:%M:%S");
 
 	if (bFiring)
-		m_pLog->logRecord("开始[%s]\n=========================\n双平台-均线参数[%d]起爆[开启]\n", buf, avgFac);
+		m_pLog->logRecord("开始[%s]\n=========================\n双平台-均线参数[%d]起爆[开启]\n", buf.c_str(), avgFac);
 	else
-		m_pLog->logRecord("开始[%s]\n=========================\n双平台-均线参数[%d]起爆[关闭]\n", buf, avgFac);
+		m_pLog->logRecord("开始[%s]\n=========================\n双平台-均线参数[%d]起爆[关闭]\n", buf.c_str(), avgFac);
 
 	std::map<tagStockCodeInfo, std::vector<tagKline>>::const_iterator iter;
 	//std::map<tagStockCodeInfo, std::vector<tagKline>> mapInput = input;
@@ -352,15 +424,15 @@ bool CCaculateAlg::double_plat(const std::map<tagStockCodeInfo, std::vector<tagK
 	for (iter = input.begin(), nIndex = 0; iter != input.end(); ++iter)
 	{
 		if(iter->second.size() > 0){
-			/*tagKline temp = iter->second.at(iter->second.size()-1);
-			memset(buf, 0, sizeof(buf));
+			tagKline temp = iter->second.at(iter->second.size()-1);
+			buf="";
 			stamp_to_standard(temp.time, buf, "%Y%m%d");
-			if (strcmp(buf, DEADLINE_DATE) >= 0)
+			if (strcmp(buf.c_str(), DEADLINE_DATE) >= 0)
 			{
-			m_pLog->clearLog();
-			m_pLog->logRecord("程序试用期已经结束，程序退出");
-			return true;
-			}*/
+				m_pLog->clearLog();
+				m_pLog->logRecord("程序试用期已经结束，程序退出");
+				return true;
+			}
 		}
 
 		PrintHead(iter->first, ++nIndex);
@@ -440,12 +512,12 @@ bool CCaculateAlg::double_plat(const std::map<tagStockCodeInfo, std::vector<tagK
 bool CCaculateAlg::single_plat(const std::map<tagStockCodeInfo, std::vector<tagKline>> & input, std::map<tagStockCodeInfo,
 	tagOutput> & output, short avgFac, bool bFiring /*= false*/)
 {
-	char buf[32] = { 0 };
+	std::string buf;
 	stamp_to_standard(time(NULL), buf, "%Y-%m-%d %H:%M:%S");
 	if (bFiring)
-		m_pLog->logRecord("开始[%s]\n=========================\n单平台-均线参数[%d]起爆[开启]\n", buf, avgFac);
+		m_pLog->logRecord("开始[%s]\n=========================\n单平台-均线参数[%d]起爆[开启]\n", buf.c_str(), avgFac);
 	else
-		m_pLog->logRecord("开始[%s]\n=========================\n单平台-均线参数[%d]起爆[关闭]\n", buf, avgFac);
+		m_pLog->logRecord("开始[%s]\n=========================\n单平台-均线参数[%d]起爆[关闭]\n", buf.c_str(), avgFac);
 
 	std::map<tagStockCodeInfo, std::vector<tagKline>>::const_iterator iter;
 	//std::map<tagStockCodeInfo, std::vector<tagKline>> mapInput = input;

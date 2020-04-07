@@ -48,6 +48,7 @@ private:
 	bool filterStepA4(const std::vector<tagKline>& vecKline, TFirstFilter& tFirFilter, int nB1Pos, int nB2Pos, int & nL2Pos);
 	bool filterStepA5(const std::vector<tagKline>& vecKline, TFirstFilter& tFirFilter, int nAPos, int nB2Pos);
 	bool filterStepA6(const std::vector<tagKline>& vecKline, TFirstFilter& tFirFilter, int nAPos);
+	bool filterStepA6Advanced(const std::vector<tagKline>& vecKline, TFirstFilter& tFirFilter, int nAPos, int nB2Pos);
 
 	void PrintData(const std::vector<tagKline>& kLineData);
 	void PrintHead(const tagStockCodeInfo & codeInfo, int nPos);
