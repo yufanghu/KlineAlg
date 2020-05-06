@@ -33,12 +33,13 @@ private:
 	CLog * m_pLog;
 	double m_H2;
 	double m_HB1;
+	double m_H1;
 	int m_posHB1;
 	double m_CA;
 	long long m_CATime;
 	long long m_stepBhb1;
 	bool m_type;
-	const std::vector<tagKline> m_inStockKlines;
+	std::vector<tagKline> m_inStockKlines;
 	std::vector<tagQuota>&  m_quota;
 	std::map<long long,double> m_mapAvg; //记录60周均线值
 };

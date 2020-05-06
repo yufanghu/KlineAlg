@@ -252,6 +252,18 @@ namespace alg{
 		eStepAB,
 	};
 
+
+	enum EQuotaInfoType{   
+		eType1, //突破后收盘价一直在60均线之上
+		eType2  //跌破60均线
+	};
+
+	enum EQUotaPeriodType{
+		ePeriodA,       //周期值A
+		ePeriodB		//周期值B
+	};
+
+
 	struct tagQuotaA{
 		__int64 h1Time;		//h1时间戳
 		__int64 h2Time;		//h2时间戳
@@ -259,11 +271,25 @@ namespace alg{
 		EPlatLevel level;	//平台级别
 	};
 
+	//包容周期
+	struct tagQuotaPeriod{
+		EQUotaPeriodType type; //包容周期类型
+		int periodValue;       //包容均线周期值
+	};
+
+	//平台B是否跌破60均线
+	struct tagQuotaInfo{
+		EQuotaInfoType type;
+		__int64 timeInfo;       //当type=eType1时为有效数据<跌破60均线的k线时间戳>
+	};
+
 	struct tagQuotaB{
-		__int64 h1Time;    //h1时间戳  
-		__int64 h2Time;    //h2时间戳
-		EPlatLevel level;  //平台级别
-		bool bIsBreak;     //最后一根是否突破 true表示h2已经突破，已成型;false表示未突破，形成中
+		__int64 h1Time;			//h1时间戳  
+		__int64 h2Time;			//h2时间戳
+		EPlatLevel level;		//平台级别
+		bool bIsBreak;			//最后一根是否突破 true表示h2已经突破，已成型;false表示未突破，形成中
+		tagQuotaInfo info;		//当bIsBreak为true时 为有效数据
+		tagQuotaPeriod period;	//当bIsBreak为true时 为有效数据
 	};
 
 	struct tagQuota{
@@ -271,6 +297,7 @@ namespace alg{
 		tagQuotaA quotaA;
 		tagQuotaB quotaB;
 	};
+
 #pragma region 算法四
 }
 
