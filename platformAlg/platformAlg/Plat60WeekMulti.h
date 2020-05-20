@@ -49,6 +49,6 @@ private:
 	std::vector<tagKline> m_inStockKlines;
 	std::vector<tagQuota>  m_quota;
 	std::map<long long, double> m_mapAvg; //记录60周均线值
-	int minVal;;
+	double minVal;;
 };
 
