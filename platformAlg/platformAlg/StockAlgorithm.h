@@ -69,14 +69,14 @@ namespace alg{
 		//其他信息
 	};
 
-	
+
 
 #pragma endregion 公共部分
 
 #pragma region 算法一
 
 	enum ESign
-	{ 
+	{
 		Normal = 1, NoPos, Abnormal
 	};
 
@@ -187,10 +187,10 @@ namespace alg{
 		short	sRbcoe;           //阳k线比例  整数形式：1-99
 		short   sUpLimit;             //上涨幅度（默认20）， 1-200
 		short   sDownLimit;           //下跌幅度（默认200），1-200
-		TFirstFilter() 
-			:sA3Switch(0), 
-			bA4Switch(false), 
-			bA5Switch(false), 
+		TFirstFilter()
+			:sA3Switch(0),
+			bA4Switch(false),
+			bA5Switch(false),
 			sCallbackRange(1),
 			bA6Switch(false),
 			sRbcoe(1),
@@ -201,13 +201,13 @@ namespace alg{
 	};
 
 	//二级筛选
-	struct TSecondFilter  : public Alg2Filter
+	struct TSecondFilter : public Alg2Filter
 	{
 		TA2    tLineNum;
 		bool   bA5Switch;
 		short  sCallbackRange;//双底调整幅度  整数形式：1-99
-		TSecondFilter() 
-			:bA5Switch(false), 
+		TSecondFilter()
+			:bA5Switch(false),
 			sCallbackRange(1)
 		{
 		};
@@ -215,13 +215,13 @@ namespace alg{
 
 
 	//三级筛选
-	struct TThirdFilter  : public Alg2Filter
+	struct TThirdFilter : public Alg2Filter
 	{
 		TA2   tLineNum;
 		bool   bA5Switch;
 		short sCallbackRange;//双底调整幅度  整数形式：1-99
-		TThirdFilter() 
-			:bA5Switch(false), 
+		TThirdFilter()
+			:bA5Switch(false),
 			sCallbackRange(1)
 		{
 		};
@@ -238,7 +238,7 @@ namespace alg{
 	};
 
 #pragma endregion 算法三
-	
+
 
 #pragma endregion 算法四
 	enum EPlatLevel{
@@ -253,12 +253,12 @@ namespace alg{
 	};
 
 
-	enum EQuotaInfoType{   
+	enum EQuotaInfoType{
 		eType1, //突破后收盘价一直在60均线之上
 		eType2  //跌破60均线
 	};
 
-	enum EQUotaPeriodType{
+	enum EQuotaPeriodType{
 		ePeriodA,       //周期值A
 		ePeriodB		//周期值B
 	};
@@ -273,7 +273,7 @@ namespace alg{
 
 	//包容周期
 	struct tagQuotaPeriod{
-		EQUotaPeriodType type; //包容周期类型
+		EQuotaPeriodType type; //包容周期类型
 		int periodValue;       //包容均线周期值
 	};
 
@@ -314,10 +314,10 @@ using namespace alg;
 */
 //平台筛选接口
 bool alg_platform(const std::map<tagStockCodeInfo, std::vector<tagKline>> & input,
-	std::map<tagStockCodeInfo, tagOutput> & output, EPlatFormType platformType, short avgFac, bool bFiring =false);
+	std::map<tagStockCodeInfo, tagOutput> & output, EPlatFormType platformType, short avgFac, bool bFiring = false);
 
 /************************************************************************/
-/* 
+/*
 算法2
 @param inMap  输入参数  key-股票信息， value-k线集合
 @param output 输出参数  key-股票信息， value-
@@ -353,6 +353,16 @@ bool alg_stock1(const std::map<tagStockCodeInfo, std::vector<tagKline>>& inMap, 
 */
 /************************************************************************/
 void alg_stock4(const std::vector<tagKline>& inStockKlines, std::vector<tagQuota> & quota);
+
+
+/************************************************************************/
+/*
+算法4扩展入口   搜索A、B，且B突破后一直在60均以上的股票
+@param inMap  输入参数   key-股票信息， value-k线集合
+@param outMap 输出参数   key-股票信息， value-输出
+*/
+/************************************************************************/
+void alg_stock4_multi(const std::map<tagStockCodeInfo, std::vector<tagKline>>& inMap, std::map<tagStockCodeInfo, tagOutput> & outMap);
 
 /************************************************************************/
 /*

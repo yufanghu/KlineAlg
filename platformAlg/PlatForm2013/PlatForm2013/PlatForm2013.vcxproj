@@ -87,6 +87,7 @@
     <ClCompile Include="..\..\platformAlg\Log.cpp" />
     <ClCompile Include="..\..\platformAlg\main.cpp" />
     <ClCompile Include="..\..\platformAlg\Plat60Week.cpp" />
+    <ClCompile Include="..\..\platformAlg\Plat60WeekMulti.cpp" />
     <ClCompile Include="..\..\platformAlg\StockAlgorithm.cpp" />
     <ClCompile Include="..\..\platformAlg\CaculateStock2.cpp" />
     <ClCompile Include="..\..\platformAlg\Thread.cpp" />
@@ -101,6 +102,7 @@
     <ClInclude Include="..\..\platformAlg\Global.h" />
     <ClInclude Include="..\..\platformAlg\Log.h" />
     <ClInclude Include="..\..\platformAlg\Plat60Week.h" />
+    <ClInclude Include="..\..\platformAlg\Plat60WeekMulti.h" />
     <ClInclude Include="..\..\platformAlg\StockAlgorithm.h" />
     <ClInclude Include="..\..\platformAlg\CaculateStock2.h" />
     <ClInclude Include="..\..\platformAlg\Thread.h" />

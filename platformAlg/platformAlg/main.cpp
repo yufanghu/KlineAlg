@@ -123,6 +123,7 @@ int main(int argc, char* argv)
 
 		alg_stock2(input, output, second);*/
 	std::vector<tagQuota> output;
+	EnableAlgLog(false);
 	alg_stock4(input,output);
 
 

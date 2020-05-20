@@ -59,7 +59,7 @@ bool CPlat60Week::get_avg()
 			string sTime;
 			stamp_to_standard(m_inStockKlines[k].time, sTime);
 			double avg1 = dSum / nCount ;
-			avg1 = avg1 + 0.005;
+			avg1 = avg1 + 0.0051*(int(avg1/fabs(avg1)));
 			double res = (int)(avg1 * 100) / 100.0;
 			m_mapAvg[m_inStockKlines[k].time] = res;
 			//m_pLog->logRecord("均线值%I64d  %s,%f %d\n", m_inStockKlines[k].time,sTime.c_str(), dSum / nCount,m_inStockKlines.size());
@@ -116,8 +116,8 @@ bool CPlat60Week::loopStepA(int start, int& end)
 		if (m_inStockKlines[i + j].close < avg && fabs(avg - m_inStockKlines[i + j].close) > minVal)
 		{
 			sTime.clear();
-			stamp_to_standard(m_inStockKlines[i].time, sTime);
-			m_pLog->logRecord("stepA 收盘价格小于均价[日期=%I64d][%s][close=%f][avg=%f]\n", m_inStockKlines[i].time, sTime.c_str(), m_inStockKlines[j].close,
+			stamp_to_standard(m_inStockKlines[i+j].time, sTime);
+			m_pLog->logRecord("stepA 收盘价格小于均价[日期=%I64d][%s][close=%f][avg=%f]\n", m_inStockKlines[i + j].time, sTime.c_str(), m_inStockKlines[i + j].close,
 				avg);
 			end = i + j;
 			return false;
@@ -448,12 +448,12 @@ bool CPlat60Week::loopEntrance()
 	for (int i = 0; i < m_inStockKlines.size(); ++i)
 	{
 		double h = m_inStockKlines[i].high;
-		double res = h + 0.005;
+		double res = h + 0.0051*(int(h/fabs(h)));
 		m_inStockKlines[i].high = (int)(res * 100) / 100.0;
 
 		//收盘价
 		h = m_inStockKlines[i].close;
-		res = h + 0.005;
+		res = h + 0.0051*(int(h/fabs(h)));
 		m_inStockKlines[i].close = (int)(res * 100) / 100.0;
 	}
 
@@ -579,6 +579,46 @@ bool CPlat60Week::loopEntrance()
 		m_pLog->logRecord("满足信息1:突破B平台未跌破60周[%I64d][%s]\n", m_inStockKlines.back().time, sTime2.c_str());
 	}
 
+	//查找包容周期
+	m_pLog->logRecord("\n开始查找包容周期数\n");
+	int posA = 0; //记录A平台最低价位置
+	int posB = 0; //记录B平台最低价位置
+	double lowPriceA = 0.0f;
+	double lowPriceB = 0.0f;
+	for (int i = 0; i < m_quota.size(); ++i)
+	{
+		if (m_quota[i].step == EStep::eStepAB &&m_quota[i].quotaB.bIsBreak)
+		{
+		   //A平台
+			int d = MaxPeriod(m_quota[i].quotaA.h1Time, m_quota[i].quotaA.h2Time,posA);
+			int d2 = MaxPeriod(m_quota[i].quotaB.h1Time, m_quota[i].quotaB.h2Time,posB);
+			if (d2 > d)
+			{
+				m_quota[i].quotaB.period.periodValue = d2;
+				m_quota[i].quotaB.period.type = EQuotaPeriodType::ePeriodB;
+				string sTime2;
+				stamp_to_standard(m_inStockKlines[posB].time, sTime2);
+				string sTime1;
+				stamp_to_standard(m_inStockKlines[posA].time, sTime1);
+				m_pLog->logRecord("最大包容周期结果：B平台[%s][%I64d]周期数:[%d] (A平台[%s][%I64d]周期数:[%d])\n", 
+					sTime2.c_str(), m_inStockKlines[posB].time, m_quota[i].quotaB.period.periodValue,
+					sTime1.c_str(), m_inStockKlines[posA].time,d);
+			}
+			else
+			{
+				m_quota[i].quotaB.period.periodValue = d;
+				m_quota[i].quotaB.period.type = EQuotaPeriodType::ePeriodA;
+				string sTime2;
+				stamp_to_standard(m_inStockKlines[posA].time, sTime2);
+				string sTime1;
+				stamp_to_standard(m_inStockKlines[posA].time, sTime1);
+				m_pLog->logRecord("最大包容周期结果：A平台[%s][%I64d]周期数:[%d] (B平台[%s][%I64d]周期数:[%d])\n", 
+					sTime2.c_str(), m_inStockKlines[posA].time, m_quota[i].quotaB.period.periodValue,
+					sTime1.c_str(), m_inStockKlines[posB].time, d2);
+			}
+		}
+	}
+
 	m_pLog->logRecord("筛选结束\n");
 	return true;
 }
@@ -590,4 +630,67 @@ void CPlat60Week::PrintData(const std::vector<tagKline>& kLineData)
 		m_pLog->dataRecord("%lld,%f,%f,%f,%f,\n", it->time, it->open, it->high, it->low, it->close);
 	}
 	//printf("读取%d行数据,开 高 低 收\n\n", kLineData.size());
+}
+
+int  CPlat60Week::MaxPeriod(__int64 beginD, __int64 endD, int& pos)
+{
+	int tmp = 0;
+	int maxDay = 0;
+	pos = 0;
+	int k = 0;
+	for (int j = 0; j < m_inStockKlines.size(); ++j)
+	{
+		if (m_inStockKlines[j].time >= beginD && m_inStockKlines[j].time <= endD)
+		{
+			for ( k = 2; k <= 200; ++k)
+			{
+				int res = getMaxAvg(j, k);
+				if (res == 1)
+				{
+					if (k > tmp)
+					{
+						tmp = k;
+						pos = j;
+					}
+					break;
+				}
+				if (res == -1)
+				{
+					break;
+				}
+			}
+			if (k < 200 && tmp > maxDay)
+			{
+				maxDay = tmp;
+			}
+		}
+
+	}
+
+	return maxDay;
+}
+
+int CPlat60Week::getMaxAvg(int pos, int weeks)
+{
+	if (pos + 1 < weeks || weeks <= 0)
+	{
+		string sTime2;
+		stamp_to_standard(m_inStockKlines[pos].time, sTime2);
+		m_pLog->logRecord("计算包容周期不足[%I64d][%s] 周期[%d]", m_inStockKlines[pos].time, sTime2.c_str(), weeks);
+		return -1;
+	}
+
+	double dsum = 0.0f;
+	for (int i = weeks -1; i >= 0; --i)
+	{
+		dsum += m_inStockKlines[pos - i].close;
+	}
+
+	double avg = dsum / weeks;
+	if (avg <= m_inStockKlines[pos].low)
+	{
+		return 1;
+	}
+
+	return 0;
 }

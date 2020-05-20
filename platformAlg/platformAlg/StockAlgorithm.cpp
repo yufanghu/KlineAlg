@@ -4,6 +4,7 @@
 #include "AlgStock1.h"
 #include "AlgPlatForm.h"
 #include "Plat60Week.h"
+#include "Plat60WeekMulti.h"
 #include "Log.h"
 
 bool alg_platform(const std::map<tagStockCodeInfo, std::vector<tagKline>>& input, std::map<tagStockCodeInfo, tagOutput>& output,
@@ -59,6 +60,13 @@ bool alg_stock1(const std::map<tagStockCodeInfo, std::vector<tagKline>>& inMap, 
 void alg_stock4(const std::vector<tagKline>& inStockKlines, std::vector<tagQuota> & quota)
 {
 	CAlgBase *pBase = new CPlat60Week(inStockKlines, quota);
+	pBase->createNewAlg();
+	delete pBase;
+}
+
+void alg_stock4_multi(const std::map<tagStockCodeInfo, std::vector<tagKline>>& inMap, std::map<tagStockCodeInfo, tagOutput> & outMap)
+{
+	CAlgBase *pBase = new CPlat60WeekMulti(inMap, outMap);
 	pBase->createNewAlg();
 	delete pBase;
 }
