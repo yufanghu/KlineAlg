@@ -25,7 +25,7 @@ public:
 	void SetLogObj(CLog * pLog){ m_pLog = pLog; }
 
 private:
-	//è·å–é˜³çº¿ä¸ªæ•°
+	//»ñÈ¡ÑôÏß¸öÊı
 	int GetSunLineNum(std::vector<tagKline>::const_iterator itvDataBegin,
 		 int end);
 	bool GetLowOrHighClose(const std::vector<tagKline>& itvDataBegin, int start, int end,
@@ -34,10 +34,10 @@ private:
 		std::vector<tagKline>::const_iterator itvDataEnd, tagKline& tResult);
 
 	/*
-	ç­›é€‰ï¼ˆA1ï¼‰
-	aã€æœç´¢èŒƒå›´å†…æ”¶ç›˜ä»·æœ€ä½æ•°æ®A
-	bã€æœç´¢Aæ•°æ®æ—¥æœŸå‰æ”¶ç›˜ä»·æœ€é«˜B1æ•°æ®
-	c.æœç´¢Aæ•°æ®æ—¥æœŸåæ”¶ç›˜ä»·æœ€é«˜B2æ•°æ®
+	É¸Ñ¡£¨A1£©
+	a¡¢ËÑË÷·¶Î§ÄÚÊÕÅÌ¼Û×îµÍÊı¾İA
+	b¡¢ËÑË÷AÊı¾İÈÕÆÚÇ°ÊÕÅÌ¼Û×î¸ßB1Êı¾İ
+	c.ËÑË÷AÊı¾İÈÕÆÚºóÊÕÅÌ¼Û×î¸ßB2Êı¾İ
 	*/
 	bool filterStepA1(const std::vector<tagKline>& vecKline, tagKline& tLowA, int& nApos,
 		tagKline& tHighB1, int& nB1Pos,

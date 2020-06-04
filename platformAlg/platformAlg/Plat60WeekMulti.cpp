@@ -6,8 +6,8 @@
 
 
 CPlat60WeekMulti::CPlat60WeekMulti(const std::map<tagStockCodeInfo, std::vector<tagKline>>& inMap, std::map<tagStockCodeInfo, tagOutput> & outMap)
-:m_outMap(outMap),
-m_inMap(inMap)
+	:m_outMap(outMap),
+	m_inMap(inMap)
 {
 	minVal = 0.000001;
 }
@@ -75,7 +75,7 @@ bool CPlat60WeekMulti::loopStepA(int start, int& end)
 	int i = start;
 	end = i;
 	double & avg = m_mapAvg[m_inStockKlines[i].time];
-	if (m_inStockKlines[i].close  < avg )
+	if (m_inStockKlines[i].close  < avg)
 	{
 		return false;
 	}
@@ -108,7 +108,7 @@ bool CPlat60WeekMulti::loopStepA(int start, int& end)
 			/*sTime.clear();
 			stamp_to_standard(m_inStockKlines[i + j].time, sTime);
 			m_pLog->logRecord("stepA 收盘价格小于均价[日期=%I64d][%s][close=%f][avg=%f]\n", m_inStockKlines[i + j].time, sTime.c_str(), m_inStockKlines[i + j].close,
-				avg);*/
+			avg);*/
 			end = i + j;
 			return false;
 		}
@@ -120,7 +120,7 @@ bool CPlat60WeekMulti::loopStepA(int start, int& end)
 			string sTime2;
 			stamp_to_standard(m_inStockKlines[end].time, sTime2);
 			m_pLog->logRecord("stepA 不满足条件1 连续四周不大于高点[高点日期%I64d][%s][高点：%lf][当前日期=%I64d][%s][收盘价：%lf]\n",
-				m_inStockKlines[i + j].time, sTime1.c_str(), dHigh, m_inStockKlines[end].time, sTime2.c_str(), m_inStockKlines[i + j].close);*/
+			m_inStockKlines[i + j].time, sTime1.c_str(), dHigh, m_inStockKlines[end].time, sTime2.c_str(), m_inStockKlines[i + j].close);*/
 			end = i;
 			return false;
 		}
@@ -150,7 +150,7 @@ bool CPlat60WeekMulti::loopStepA(int start, int& end)
 			/*sTime.clear();
 			stamp_to_standard(m_inStockKlines[l].time, sTime);
 			m_pLog->logRecord("stepA 收盘价格小于均价11[日期=%I64d][%s][close=%f][avg=%f]\n", m_inStockKlines[l].time, sTime.c_str(), m_inStockKlines[l].close,
-				avg);*/
+			avg);*/
 			end = l;
 			return false;
 		}
@@ -203,7 +203,7 @@ bool CPlat60WeekMulti::loopStepB(int start, int& end)
 			/*string sTime;
 			stamp_to_standard(m_inStockKlines[l].time, sTime);
 			m_pLog->logRecord("stepB 收盘价格小于均价[日期=%I64d][%s][close=%f][avg=%f]\n", m_inStockKlines[l].time, sTime.c_str(), m_inStockKlines[l].close,
-				avg);*/
+			avg);*/
 			end = l;
 			return false;
 		}
@@ -287,7 +287,7 @@ bool CPlat60WeekMulti::loopStepBOne(int start, int& end)
 		end = i;
 		/*stamp_to_standard(m_inStockKlines[end].time, sTime1);
 		m_pLog->logRecord("stepB 不满足阶段1条件2：大于1.8 [高点日期%I64d][%s][当前日期=%I64d][%s][rate=%f]\n",
-			m_inStockKlines[i].time, sTime2.c_str(), m_inStockKlines[end].time, sTime1.c_str(), m_HB1 / m_H1);*/
+		m_inStockKlines[i].time, sTime2.c_str(), m_inStockKlines[end].time, sTime1.c_str(), m_HB1 / m_H1);*/
 
 		//大于1.8之后要重新寻找均线下位置
 		int m = end;
@@ -311,7 +311,7 @@ bool CPlat60WeekMulti::loopStepBOne(int start, int& end)
 			/*string sTime2;
 			stamp_to_standard(m_inStockKlines[i + j].time, sTime2);
 			m_pLog->logRecord("stepB1 收盘小于均价[%I64d][%s][close=%f][avg=%f][ca=%f]\n", m_inStockKlines[i + j].time, sTime2.c_str(),
-				m_inStockKlines[i + j].close, avg, m_CA);*/
+			m_inStockKlines[i + j].close, avg, m_CA);*/
 			end = i + j;
 			return false;
 		}
@@ -325,7 +325,7 @@ bool CPlat60WeekMulti::loopStepBOne(int start, int& end)
 			string sTime1;
 			stamp_to_standard(m_inStockKlines[end].time, sTime1);
 			m_pLog->logRecord("stepB 不满足阶段1:连续四周不高于高点 [高点日期%I64d][%s][当前日期=%I64d][%s]\n",
-				m_inStockKlines[i].time, sTime2.c_str(), m_inStockKlines[end].time, sTime1.c_str());*/
+			m_inStockKlines[i].time, sTime2.c_str(), m_inStockKlines[end].time, sTime1.c_str());*/
 			start = i + 1;
 
 			return loopStepBOne(start, end);
@@ -350,7 +350,7 @@ bool CPlat60WeekMulti::loopStepBTwo(int start, int&end)
 			/*string sTime1;
 			stamp_to_standard(m_inStockKlines[start].time, sTime1);
 			m_pLog->logRecord("stepB2 收盘小于均价[%I64d][%s][close=%f][avg=%f]", m_inStockKlines[start].time, sTime1.c_str(),
-				m_inStockKlines[start].close, avg);*/
+			m_inStockKlines[start].close, avg);*/
 			end = start;
 			return false;
 		}
@@ -386,7 +386,7 @@ bool CPlat60WeekMulti::loopStepBThree(int start, int&end)
 			/*string sTime1;
 			stamp_to_standard(m_inStockKlines[start].time, sTime1);
 			m_pLog->logRecord("stepB3 收盘小于均价[%I64d][%s][close=%f][avg=%f]", m_inStockKlines[start].time, sTime1.c_str(),
-				m_inStockKlines[start].close, avg);*/
+			m_inStockKlines[start].close, avg);*/
 			end = start;
 			return false;
 		}
@@ -432,7 +432,7 @@ bool CPlat60WeekMulti::loopEntrance()
 		bool bAvg = get_avg();
 		if (!bAvg)
 		{
-			return false;
+			continue;
 		}
 		//存在60周线才可以进入循环
 		int end = 60;
@@ -474,7 +474,7 @@ bool CPlat60WeekMulti::loopEntrance()
 			string sTiem3;
 			stamp_to_standard(tagOne.quotaA.caTime, sTiem3);
 			/*m_pLog->logRecord("stepA 筛选成功h1:[%I64d][%s] h2:[%I64d][%s] CA:[%I64d][%s][%lf] 平台级别:[%d]\n\n", tagOne.quotaA.h1Time, sTime2.c_str(),
-				tagOne.quotaA.h2Time, sTime1.c_str(), tagOne.quotaA.caTime, sTiem3.c_str(), m_CA, grade);*/
+			tagOne.quotaA.h2Time, sTime1.c_str(), tagOne.quotaA.caTime, sTiem3.c_str(), m_CA, grade);*/
 
 			//保存h1
 			m_H1 = m_inStockKlines[i].high;
@@ -503,7 +503,7 @@ bool CPlat60WeekMulti::loopEntrance()
 				string sTime1;
 				stamp_to_standard(tagOne.quotaB.h2Time, sTime1);
 				m_pLog->logRecord("stepB 筛选成功h1:[%I64d][%s][%f] h2:[%I64d][%s][%f] 平台级别:[%d] 是否突破:[%d]\n\n", tagOne.quotaB.h1Time, sTime2.c_str(), m_HB1,
-					tagOne.quotaB.h2Time, sTime1.c_str(), m_inStockKlines[end].close, grade, tagOne.quotaB.bIsBreak);*/
+				tagOne.quotaB.h2Time, sTime1.c_str(), m_inStockKlines[end].close, grade, tagOne.quotaB.bIsBreak);*/
 			}
 			m_quota.push_back(tagOne);
 			if (bRet && tagOne.quotaB.bIsBreak)
@@ -544,22 +544,22 @@ bool CPlat60WeekMulti::loopEntrance()
 			stamp_to_standard(m_quota.back().quotaB.info.timeInfo, sTime2);*/
 			//m_pLog->logRecord("满足筛选条件:代码[%s]\n", iter->first.stockcode.c_str());
 			tagStockCodeInfo retTag(iter->first.market, iter->first.stockcode);
-			
+
 			tagOutput& oneTag = m_outMap[retTag];
 		}
 
-		
+
 
 	}
 
 
 
 	std::map<tagStockCodeInfo, tagOutput>::iterator it;
-	m_pLog->logRecord("-------筛选结果共[%d]支满足条件--------\n",m_outMap.size());
+	m_pLog->logRecord("-------筛选结果共[%d]支满足条件--------\n", m_outMap.size());
 	int ii = 1;
 	for (it = m_outMap.begin(); it != m_outMap.end(); ++it)
 	{
-		m_pLog->logRecord("[%d-%s],", it->first.market,it->first.stockcode.c_str());
+		m_pLog->logRecord("[%d-%s],", it->first.market, it->first.stockcode.c_str());
 		if (ii % 5 == 0)
 		{
 			m_pLog->logRecord("\n");
